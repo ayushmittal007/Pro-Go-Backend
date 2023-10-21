@@ -3,7 +3,7 @@ const User = require("../model/user")
 const app = express()
 app.use(express.json())
 
-exports.register = async (req, res, next) => {
+const register = async (req, res, next) => {
     const { username, password } = req.body
     if (password.length < 6) {
       return res.status(400).json({ message: "Password less than 6 characters" })
@@ -25,3 +25,5 @@ exports.register = async (req, res, next) => {
       })
     }
   }
+
+  module.exports = register;
