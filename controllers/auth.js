@@ -1,29 +1,115 @@
 const express = require("express");
-const User = require("../model/user") 
-const app = express()
-app.use(express.json())
+const bcryptjs = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const Otp = require("../model/otp");
+const User = require("../model/user");
+const {sendmail} = require("../utils/send_mail");
+const app = express();
+app.use(express.json());
 
-const register = async (req, res, next) => {
-    const { username, password } = req.body
-    if (password.length < 6) {
-      return res.status(400).json({ message: "Password less than 6 characters" })
-    }
+const signUp = async (req, res) => {
     try {
-      await User.create({
+      const { username, password, email } = req.body;
+      if (!username || !password || !email) {
+        return res.status(400).json({ error: "fill all entries" });
+      }
+      const existingUser = await User.findOne({ email });
+
+      if (existingUser) {
+          return res.status(400).json({ msg: "User with the same username already exists" });
+      }
+      const hashedPassword = await bcryptjs.hash(password, 6);
+      const otp = Math.floor(100000 + Math.random() * 899999);
+      let OTP = new Otp({
+        email,
+        otp,
+      });
+      sendmail(email, otp);
+
+      let user = new User({
         username,
-        password,
-      }).then(user =>
-        res.status(200).json({
-          message: "User successfully created",
-          user,
-        })
-      )
+        password: hashedPassword,
+        email,
+      });
+
+      user = await user.save();
+      OTP = await OTP.save();
+      res.status(201).json(user);
+    } catch (e) {
+      res.status(500).json({ error: e});
+    }
+}
+
+const signIn =  async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(400).json({ msg: "No user exist with this username " });
+      }
+
+      const isMatch = await bcryptjs.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ msg: "Invalid Password!" });
+      }
+
+      const token = jwt.sign({ id: user._id }, "passwordKey");
+      console.log(token);
+      res.json({ token, ...user.toObject() });
     } catch (err) {
-      res.status(401).json({
-        message: "User not successful created",
-        error: err.mesage,
-      })
+      res.status(500).json({ error:err});
+    }
+  };
+
+const forgetPassword = async (req, res) => {
+    try {
+      const { email } = req.body;
+      let user = await User.findOne({ email });
+      if (!user) {
+        return res.status(400).json({ msg: "No user exists with this email" });
+      }
+      const otp = Math.floor(1000 + Math.random() * 9000);
+      let existingOtp = await Otp.findOne({ email });
+      if (existingOtp) {
+        await existingOtp.deleteOne({ email });
+      }
+      let OTP = new Otp({
+        email,
+        otp,
+      });
+      OTP = await OTP.save();
+      sendmail(email, otp);
+      res.json({ msg: "Otp is send to your registered email" });
+    } catch (err) {
+      res.status(500).json({ error: err });
     }
   }
 
-  module.exports = { register } ;
+const changePassword = async (req, res) => {
+    try {
+      const { email, otp, newPassword } = req.body;
+
+      let OTP = await Otp.findOne({ email });
+      if (otp !== (OTP && OTP.otp)) {
+        return res.status(500).json({ msg: "Invalid otp" });
+      }      
+      const hashedPassword = await bcryptjs.hash(newPassword, 8);
+      let user = await User.findOneAndUpdate(
+        { email },
+        {
+          password: hashedPassword,
+        },
+        { new: true }
+      );
+
+      res.json(user);
+    } catch (err) {
+      return res.status(500).json({ error: err });
+    }
+  }
+module.exports = {
+    signUp,
+    signIn,
+    forgetPassword,
+    changePassword
+}
