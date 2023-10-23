@@ -13,11 +13,24 @@ const signUp = async (req, res) => {
       if (!username || !password || !email) {
         return res.status(400).json({ error: "fill all entries" });
       }
-      const existingUser = await User.findOne({ email });
+      const existing_User = await User.findOne({ email });
 
-      if (existingUser) {
-          return res.status(400).json({ msg: "User with the same username already exists" });
+      if (existing_User) {
+        if (!existing_User.isVerified) {
+          await User.deleteOne({ email });
+        } else {
+          return res.status(400).json({ msg: "User with this email already exists" });
+        }
       }
+      const otp = Math.floor(1000 + Math.random() * 9000);
+      let OTP = new Otp({
+        email,
+        otp,
+      });
+      console.log(OTP);
+      mailer.sendmail(email, otp);
+      OTP = await OTP.save();
+
       const hashedPassword = await bcryptjs.hash(password, 6);
       let user = new User({
         username,
@@ -26,10 +39,33 @@ const signUp = async (req, res) => {
       });
 
       user = await user.save();
-      res.status(201).json({"status" : "sign-up successful" , user });
-    } catch (e) {
-      res.status(500).json({ error: e});
+      res.status(201).json(user);
+    } catch (err) {
+      res.status(500).json({ error: err});
     }
+}
+
+const emailVerification = async (req,res) => {
+  try {
+    const { email, otp } = req.body;
+
+    let OTP = await Otp.findOne({ email });
+    console.log(OTP);
+    if (otp != OTP.otp) {
+      return res.status(500).json({ msg: "Invalid otp" });
+    }  
+    await User.findOneAndUpdate(
+      { email },
+      {
+        isVerified: true,
+      },
+      { new: true }
+    );
+    await Otp.deleteOne({ email });
+    res.json({ msg: "Email Verified" ,"status" : "sign-up successful" });
+  } catch (err) {
+    res.status(500).json({ error : err});
+  }
 }
 
 const signIn =  async (req, res) => {
@@ -98,8 +134,10 @@ const changePassword = async (req, res) => {
       return res.status(500).json({ error: err });
     }
   }
+  
 module.exports = {
     signUp,
+    emailVerification,
     signIn,
     forgetPassword,
     changePassword
