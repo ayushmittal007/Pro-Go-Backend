@@ -1,8 +1,7 @@
 const express = require("express");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const Otp = require("../model/otp");
-const User = require("../model/user");
+const {User,Otp} = require("../model");
 const mailer = require("../utils/send_mail");
 const app = express();
 app.use(express.json());

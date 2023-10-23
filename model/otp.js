@@ -12,5 +12,5 @@ const OtpSchema = new Mongoose.Schema({
   },
 })
 
-const OTP = Mongoose.model("otp", OtpSchema)
-module.exports = OTP
+const Otp = Mongoose.model("otp", OtpSchema)
+module.exports = Otp
