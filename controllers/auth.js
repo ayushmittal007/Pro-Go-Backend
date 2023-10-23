@@ -38,9 +38,14 @@ const signUp = async (req, res) => {
       });
 
       user = await user.save();
-      res.status(201).json(user);
+      res.status(201).json(
+        {
+          "success" : "true" , 
+          "message" : "Sign up successful! Please verify your account." ,
+          "data" : user
+        });
     } catch (err) {
-      res.status(500).json({ error: err});
+      res.status(500).json({"success" : "false", error: err});
     }
 }
 
@@ -61,9 +66,9 @@ const emailVerification = async (req,res) => {
       { new: true }
     );
     await Otp.deleteOne({ email });
-    res.json({ msg: "Email Verified" ,"status" : "sign-up successful" });
+    res.json({"success" : "true", "message": "Email Verified" ,"status" : "sign-up successful" });
   } catch (err) {
-    res.status(500).json({ error : err});
+    res.status(500).json({"success" : "false", error: err});
   }
 }
 
@@ -81,9 +86,9 @@ const signIn =  async (req, res) => {
       }
 
       const token = jwt.sign({ id: user._id }, "passwordKey");
-      res.json({ token, ...user.toObject() });
+      res.json({ "success" : "true", "message" : "Login successful" ,"data" : { token , ...user.toObject()} });
     } catch (err) {
-      res.status(500).json({ error:err});
+      res.status(500).json({"success" : "false", error: err});
     }
   };
 
@@ -105,9 +110,9 @@ const forgetPassword = async (req, res) => {
       });
       OTP = await OTP.save();
       mailer.sendmail(email, otp);
-      res.json({ msg: "Otp is send to your registered email" });
+      res.json({"success" : "true", "message": "Otp is send to your registered email" });
     } catch (err) {
-      res.status(500).json({ error: err });
+      res.status(500).json({ "success" : "false" , error: err });
     }
   }
 
@@ -128,9 +133,9 @@ const changePassword = async (req, res) => {
         { new: true }
       );
 
-      res.json({ "status" : "password changed" , user});
+      res.json({ "success" : "true" , "message" : "password changed" , "data" : user});
     } catch (err) {
-      return res.status(500).json({ error: err });
+      return res.status(500).json({ "success" : "false", error: err });
     }
   }
   
