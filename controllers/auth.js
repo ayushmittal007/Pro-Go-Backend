@@ -3,6 +3,7 @@ const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const {User,Otp} = require("../model");
 const mailer = require("../utils/send_mail");
+const validateEmail = require("../utils/validateEmail");
 const app = express();
 app.use(express.json());
 
@@ -12,15 +13,22 @@ const signUp = async (req, res) => {
       if (!username || !password || !email) {
         return res.status(400).json({ error: "fill all entries" });
       }
+      
+      if(!validateEmail(email)){
+        return res.status(400).json({ "message": "Incorrect email format" })
+      }
+
       const existing_User = await User.findOne({ email });
 
       if (existing_User) {
         if (!existing_User.isVerified) {
           await User.deleteOne({ email });
         } else {
-          return res.status(400).json({ msg: "User with this email already exists" });
+          return res.status(400).json({ "message" : "User with this email already exists" });
         }
       }
+
+
       const otp = Math.floor(1000 + Math.random() * 9000);
       let OTP = new Otp({
         email,
