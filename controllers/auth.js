@@ -34,7 +34,7 @@ const signUp = async (req, res) => {
 
       user = await user.save();
       OTP = await OTP.save();
-      res.status(201).json(user);
+      res.status(201).json({"status" : "sign-up successful" , user });
     } catch (e) {
       res.status(500).json({ error: e});
     }
