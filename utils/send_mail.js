@@ -8,8 +8,7 @@ const sendmail = async (email,otp) => {
         subject: "Verification code",
         html: `
           <p style="margin-bottom: 30px;">Please enter this OTP to proceed further</p>
-          <h1 style="font-size: 40px; letter-spacing: 2px; text-align:center; color:green;">${otp}</h1>
-        `,
+          <h1 style="font-size: 40px; letter-spacing: 2px; text-align:center; color:green;">${otp}</h1>`,
     }
 
     const transporter = nodemailer.createTransport({

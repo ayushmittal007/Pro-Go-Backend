@@ -54,7 +54,6 @@ const signIn =  async (req, res) => {
       }
 
       const token = jwt.sign({ id: user._id }, "passwordKey");
-      console.log(token);
       res.json({ token, ...user.toObject() });
     } catch (err) {
       res.status(500).json({ error:err});
