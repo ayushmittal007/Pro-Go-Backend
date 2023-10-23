@@ -12,13 +12,13 @@ const sendmail = async (email,otp) => {
     }
 
     const transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 465,
-        secure: true,
-        auth: {
-          user: process.env.EMAIL,
-          pass: process.env.PASS,
-        },
+      service: 'gmail',
+      auth:{
+          user: process.env.MAIL_ID,
+          pass: process.env.MAIL_PASS
+      },
+      port: 456,
+      host: "smtp.gmail.com"
     });
 
     transporter.sendMail(msg,err=>{

@@ -3,7 +3,7 @@ const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Otp = require("../model/otp");
 const User = require("../model/user");
-const {sendmail} = require("../utils/send_mail");
+const mailer = require("../utils/send_mail");
 const app = express();
 app.use(express.json());
 
@@ -24,7 +24,7 @@ const signUp = async (req, res) => {
         email,
         otp,
       });
-      sendmail(email, otp);
+      mailer.sendmail(email, otp);
 
       let user = new User({
         username,
@@ -77,7 +77,7 @@ const forgetPassword = async (req, res) => {
         otp,
       });
       OTP = await OTP.save();
-      sendmail(email, otp);
+      mailer.sendmail(email, otp);
       res.json({ msg: "Otp is send to your registered email" });
     } catch (err) {
       res.status(500).json({ error: err });
@@ -89,7 +89,7 @@ const changePassword = async (req, res) => {
       const { email, otp, newPassword } = req.body;
 
       let OTP = await Otp.findOne({ email });
-      if (otp !== (OTP && OTP.otp)) {
+      if (otp != OTP.otp) {
         return res.status(500).json({ msg: "Invalid otp" });
       }      
       const hashedPassword = await bcryptjs.hash(newPassword, 8);
@@ -101,7 +101,7 @@ const changePassword = async (req, res) => {
         { new: true }
       );
 
-      res.json(user);
+      res.json({ "status" : "password changed" , user});
     } catch (err) {
       return res.status(500).json({ error: err });
     }
