@@ -19,13 +19,6 @@ const signUp = async (req, res) => {
           return res.status(400).json({ msg: "User with the same username already exists" });
       }
       const hashedPassword = await bcryptjs.hash(password, 6);
-      const otp = Math.floor(100000 + Math.random() * 899999);
-      let OTP = new Otp({
-        email,
-        otp,
-      });
-      mailer.sendmail(email, otp);
-
       let user = new User({
         username,
         password: hashedPassword,
@@ -33,7 +26,6 @@ const signUp = async (req, res) => {
       });
 
       user = await user.save();
-      OTP = await OTP.save();
       res.status(201).json({"status" : "sign-up successful" , user });
     } catch (e) {
       res.status(500).json({ error: e});
