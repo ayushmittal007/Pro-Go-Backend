@@ -4,19 +4,18 @@ const jwt = require("jsonwebtoken");
 const {User,Otp} = require("../model");
 const mailer = require("../utils/send_mail");
 const validateEmail = require("../utils/validateEmail");
-const {ErrorHandler} = require("../middlewares/errorHandling");
 const app = express();
 app.use(express.json());
 
-const signUp = async (req, res,next) => {
+const signUp = async (req, res) => {
     try {
       const { username, password, email } = req.body;
       if (!username || !password || !email) {
-        return next(new ErrorHandler(400, "fill all entries"));
+        return res.status(400).json({ error: "fill all entries" });
       }
       
       if(!validateEmail(email)){
-        return next(new ErrorHandler(400, "Incorrect email format"));
+        return res.status(400).json({ "message": "Incorrect email format" })
       }
 
       const existing_User = await User.findOne({ email });
@@ -25,7 +24,7 @@ const signUp = async (req, res,next) => {
         if (!existing_User.isVerified) {
           await User.deleteOne({ email });
         } else {
-          return next(new ErrorHandler(400, "User with the same email already exists"));
+          return res.status(400).json({ "message" : "User with this email already exists" });
         }
       }
 
@@ -34,13 +33,13 @@ const signUp = async (req, res,next) => {
       .then(result => { 
           console.log("created otp") 
       })
-
+      
       mailer.sendmail(email, otp);
 
       const hashedPassword = await bcryptjs.hash(password, 6);
       User.create({ username : username , password : hashedPassword, email: email}) 
       .then(result => { 
-          console.log("created user") 
+          console.log("created User") 
       })
 
       res.status(201).json(
@@ -50,17 +49,17 @@ const signUp = async (req, res,next) => {
           "data" :  { username, password, email } 
         });
     } catch (err) {
-       res.status(500).json({"success" : "false", error: err});
+      res.status(500).json({"success" : "false", error: err});
     }
 }
 
-const emailVerification = async (req,res,next) => {
+const emailVerification = async (req,res) => {
   try {
     const { email, otp } = req.body;
 
     let OTP = await Otp.findOne({ email });
     if (otp != OTP.otp) {
-      return next(new ErrorHandler(400, "Invalid otp"));
+      return res.status(500).json({ "message": "Invalid otp" });
     }  
     await User.findOneAndUpdate(
       { email },
@@ -75,21 +74,21 @@ const emailVerification = async (req,res,next) => {
   }
 }
 
-const signIn =  async (req, res,next) => {
+const signIn =  async (req, res) => {
     try {
       const { email, password } = req.body;
       const user = await User.findOne({ email });
       if (!user) {
-        return next(new ErrorHandler(400, "No user exists with this email "));
+        return res.status(400).json({ msg: "No user exist with this username " });
       }
 
       const isMatch = await bcryptjs.compare(password, user.password);
       if (!isMatch) {
-        return next(new ErrorHandler(400, "Invalid Password"));
+        return res.status(400).json({ msg: "Invalid Password!" });
       }
 
       if (!user.isVerified) {
-        return next(new ErrorHandler(400, "Email is not verified"));
+        return res.status(400).json({ "message": "Email is not verified" });
       }
 
       const token = jwt.sign({ id: user._id }, "passwordKey");
@@ -99,15 +98,15 @@ const signIn =  async (req, res,next) => {
     }
   };
 
-const forgetPassword = async (req, res,next) => {
+const forgetPassword = async (req, res) => {
     try {
       const { email } = req.body;
       let user = await User.findOne({ email });
       if (!user) {
-          return next(new ErrorHandler(400, "This email is not registered"));
+        return res.status(400).json({ msg: "No user exists with this email" });
       }
       if (!user.isVerified) {
-        return next(new ErrorHandler(400, "Email is not verified yet"));
+        return res.status(400).json({ "message": "Email is not verified" });
       }
       const otp = Math.floor(1000 + Math.random() * 9000);
       let existingOtp = await Otp.findOne({ email });
@@ -116,7 +115,7 @@ const forgetPassword = async (req, res,next) => {
       }
       Otp.create({ email: email, otp: otp }) 
       .then(result => { 
-          console.log(result) 
+          console.log("created otp") 
       })
       
       mailer.sendmail(email, otp);
@@ -131,7 +130,7 @@ const verifyOtp = async (req, res, next) => {
       const { email, otp } = req.body;
       let OTP = await Otp.findOne({ email });
       if (otp != OTP.otp) {
-        return next(new ErrorHandler(401, "Invalid otp"));
+        return res.status(400).json({ "message": "Invalid otp" });
       }
        Otp.deleteOne({ email });
        User.findOneAndUpdate(
@@ -146,12 +145,12 @@ const verifyOtp = async (req, res, next) => {
     }
   }
 
-const changePassword = async (req, res,next) => {
+const changePassword = async (req, res) => {
     try {
       const { email, newPassword } = req.body;
       let user = await User.findOne({ email });
       if (!user.isVerified) {
-        return next(new ErrorHandler(400, "Please first verify with the otp send "));
+        return next(new ErrorHandler(403, "Please verify with otp first"));
       }    
       const hashedPassword = await bcryptjs.hash(newPassword, 6);
       User.findOneAndUpdate(
