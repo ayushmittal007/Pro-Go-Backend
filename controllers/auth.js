@@ -93,7 +93,7 @@ const signIn =  async (req, res) => {
       }
 
       if (!user.isVerified) {
-        return res.status(401).json({ "message": "Email is not verified" });
+        return res.status(400).json({ "message": "Email is not verified" });
       }
 
       const token = jwt.sign({ id: user._id }, "passwordKey");
@@ -109,6 +109,9 @@ const forgetPassword = async (req, res) => {
       let user = await User.findOne({ email });
       if (!user) {
         return res.status(400).json({ msg: "No user exists with this email" });
+      }
+      if (!user.isVerified) {
+        return res.status(400).json({ "message": "Email is not verified" });
       }
       const otp = Math.floor(1000 + Math.random() * 9000);
       let existingOtp = await Otp.findOne({ email });
