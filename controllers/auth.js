@@ -28,7 +28,6 @@ const signUp = async (req, res) => {
         }
       }
 
-
       const otp = Math.floor(1000 + Math.random() * 9000);
       let OTP = new Otp({
         email,
@@ -49,7 +48,7 @@ const signUp = async (req, res) => {
       res.status(201).json(
         {
           "success" : "true" , 
-          "message" : "Sign up successful! Please verify your account." ,
+          "message" : "Sign up successful! Please verify your account , using otp send to your mail" ,
           "data" : user
         });
     } catch (err) {
@@ -64,7 +63,7 @@ const emailVerification = async (req,res) => {
     let OTP = await Otp.findOne({ email });
     console.log(OTP);
     if (otp != OTP.otp) {
-      return res.status(500).json({ msg: "Invalid otp" });
+      return res.status(500).json({ "message": "Invalid otp" });
     }  
     await User.findOneAndUpdate(
       { email },
@@ -91,6 +90,10 @@ const signIn =  async (req, res) => {
       const isMatch = await bcryptjs.compare(password, user.password);
       if (!isMatch) {
         return res.status(400).json({ msg: "Invalid Password!" });
+      }
+
+      if (!user.isVerified) {
+        return res.status(401).json({ "message": "Email is not verified" });
       }
 
       const token = jwt.sign({ id: user._id }, "passwordKey");
@@ -132,7 +135,7 @@ const changePassword = async (req, res) => {
       if (otp != OTP.otp) {
         return res.status(500).json({ msg: "Invalid otp" });
       }      
-      const hashedPassword = await bcryptjs.hash(newPassword, 8);
+      const hashedPassword = await bcryptjs.hash(newPassword, 6);
       let user = await User.findOneAndUpdate(
         { email },
         {
