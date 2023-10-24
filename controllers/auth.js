@@ -73,7 +73,7 @@ const emailVerification = async (req,res) => {
       { new: true }
     );
     await Otp.deleteOne({ email });
-    res.json({"success" : "true", "message": "Email Verified" ,"status" : "sign-up successful" });
+    res.json({"success" : "true", "message": "Email Verified" });
   } catch (err) {
     res.status(500).json({"success" : "false", error: err});
   }
