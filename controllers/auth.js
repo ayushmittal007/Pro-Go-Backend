@@ -29,27 +29,24 @@ const signUp = async (req, res) => {
       }
 
       const otp = Math.floor(1000 + Math.random() * 9000);
-      let OTP = new Otp({
-        email,
-        otp,
-      });
-      console.log(OTP);
+      Otp.create({ email: email, otp: otp }) 
+      .then(result => { 
+          console.log(result) 
+      })
+      
       mailer.sendmail(email, otp);
-      OTP = await OTP.save();
 
       const hashedPassword = await bcryptjs.hash(password, 6);
-      let user = new User({
-        username,
-        password: hashedPassword,
-        email,
-      });
+      User.create({ username : username , password : hashedPassword, email: email}) 
+      .then(result => { 
+          console.log(result) 
+      })
 
-      user = await user.save();
       res.status(201).json(
         {
           "success" : "true" , 
           "message" : "Sign up successful! Please verify your account , using otp send to your mail" ,
-          "data" : user
+          "data" :  { username, password, email } 
         });
     } catch (err) {
       res.status(500).json({"success" : "false", error: err});
@@ -69,10 +66,9 @@ const emailVerification = async (req,res) => {
       { email },
       {
         isVerified: true,
-      },
-      { new: true }
+      }
     );
-    await Otp.deleteOne({ email });
+    Otp.deleteOne({ email });
     res.json({"success" : "true", "message": "Email Verified" });
   } catch (err) {
     res.status(500).json({"success" : "false", error: err});
@@ -116,13 +112,13 @@ const forgetPassword = async (req, res) => {
       const otp = Math.floor(1000 + Math.random() * 9000);
       let existingOtp = await Otp.findOne({ email });
       if (existingOtp) {
-        await existingOtp.deleteOne({ email });
+        existingOtp.deleteOne({ email });
       }
-      let OTP = new Otp({
-        email,
-        otp,
-      });
-      OTP = await OTP.save();
+      Otp.create({ email: email, otp: otp }) 
+      .then(result => { 
+          console.log(result) 
+      })
+      
       mailer.sendmail(email, otp);
       res.json({"success" : "true", "message": "Otp is send to your registered email" });
     } catch (err) {
@@ -130,23 +126,40 @@ const forgetPassword = async (req, res) => {
     }
   }
 
-const changePassword = async (req, res) => {
+const verifyOtp = async (req, res, next) => {
     try {
-      const { email, otp, newPassword } = req.body;
-
+      const { email, otp } = req.body;
       let OTP = await Otp.findOne({ email });
       if (otp != OTP.otp) {
-        return res.status(500).json({ msg: "Invalid otp" });
-      }      
+        return res.status(400).json({ "message": "Invalid otp" });
+      }
+       Otp.deleteOne({ email });
+       User.findOneAndUpdate(
+        {
+          email,
+        },
+        { isVerified: true },
+      );
+      res.json({ "success": "true", "message": "otp is validated" });
+    } catch (err) {
+        res.status(500).json({ error: err });
+    }
+  }
+
+const changePassword = async (req, res) => {
+    try {
+      const { email, newPassword } = req.body;
+      let user = await User.findOne({ email });
+      if (!user.isVerified) {
+        return next(new ErrorHandler(403, "Please verify with otp first"));
+      }    
       const hashedPassword = await bcryptjs.hash(newPassword, 6);
-      let user = await User.findOneAndUpdate(
+      User.findOneAndUpdate(
         { email },
         {
           password: hashedPassword,
-        },
-        { new: true }
+        }
       );
-
       res.json({ "success" : "true" , "message" : "password changed" , "data" : user});
     } catch (err) {
       return res.status(500).json({ "success" : "false", error: err });
@@ -158,5 +171,6 @@ module.exports = {
     emailVerification,
     signIn,
     forgetPassword,
+    verifyOtp,
     changePassword
 }

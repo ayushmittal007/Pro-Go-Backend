@@ -5,5 +5,6 @@ authRouter.post("/sign-up", authController.signUp);
 authRouter.post("/email-verification",authController.emailVerification);
 authRouter.post("/sign-in", authController.signIn);
 authRouter.post("/forget-password", authController.forgetPassword);
+authRouter.post("/verify-otp", authController.verifyOtp);
 authRouter.post("/change-password", authController.changePassword);
 module.exports = authRouter;
