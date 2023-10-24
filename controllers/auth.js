@@ -18,14 +18,16 @@ const signUp = async (req, res) => {
         return res.status(400).json({ "message": "Incorrect email format" })
       }
 
-      const existing_User = await User.findOne({ email });
+      let existing_User = await User.findOne({ email });
 
       if (existing_User) {
-        if (!existing_User.isVerified) {
-          await User.deleteOne({ email });
-        } else {
           return res.status(400).json({ "message" : "User with this email already exists" });
-        }
+      }
+
+      let existing_User2 = await User.findOne({ username });
+
+      if (existing_User2) {
+          return res.status(400).json({ "message" : "User with this username already exists" });
       }
 
       const otp = Math.floor(1000 + Math.random() * 9000);
@@ -65,7 +67,8 @@ const emailVerification = async (req,res) => {
       { email },
       {
         isVerified: true,
-      }
+      },
+      { new : true ,}
     );
     Otp.deleteOne({ email });
     res.json({"success" : "true", "message": "Email Verified" });
@@ -157,7 +160,8 @@ const changePassword = async (req, res) => {
         { email },
         {
           password: hashedPassword,
-        }
+        },
+        {new : true}
       );
       res.json({ "success" : "true" , "message" : "password changed" , "data" : user});
     } catch (err) {
