@@ -15,36 +15,39 @@ const signUp = async (req, res, next) => {
       const email = input.email;
       const password = input.password;
 
+      const hashedPassword = await bcryptjs.hash(password, 6);
+
       let existingEmail = await User.findOne({ email });
       if (existingEmail) {
         if (!existingEmail.isVerified) {
-          await User.deleteOne({ email });
+          existingEmail.updateOne({
+            username: username,
+            email: email,
+            password: hashedPassword,
+          });
         } else {
-           return next(new ErrorHandler(400, "User with the same email already exists"));
+          return next(
+            new ErrorHandler(400, "User with this email already exists")
+          );
         }
-      }
-
-      let existingUsername = await User.findOne({ username });
-      if (existingUsername) {
-        if (!existingUsername.isVerified) {
-          await User.deleteOne({ username });
-        } else {
-          return next(new ErrorHandler(400, "User with the same username already exists"));
+      } else {
+        let exsitingUsername = await User.findOne({ username });
+        if (exsitingUsername) {
+          return next(new ErrorHandler(400, "This username already exists"));
         }
-      }
-
-      let oldOTP = await Otp.findOne({ email });
-      if (oldOTP) {
-        await Otp.deleteOne({ email });
+        await User.create({ username : username , password : hashedPassword, email: email}) 
       }
 
       const otp = Math.floor(100000 + Math.random() * 900000);
-      await Otp.create({ email: email, otp: otp }) 
+      let oldOTP = await Otp.findOne({ email });
+      if (oldOTP) {
+        oldOTP.updateOne({otp,});
+      }
+      else {
+        await Otp.create({ email: email, otp: otp }) 
+      }
       
       mailer.sendmail(email, otp);
-
-      const hashedPassword = await bcryptjs.hash(password, 6);
-      await User.create({ username : username , password : hashedPassword, email: email}) 
     
       res.status(201).json(
         {
@@ -57,6 +60,10 @@ const signUp = async (req, res, next) => {
       next(err)
     }
 }
+
+// const phoneVerification = async(req,res,next) => {
+
+// }
 
 const emailVerification = async (req,res,next) => {
   try {
@@ -201,6 +208,7 @@ const changePassword = async (req, res , next) => {
 module.exports = {
     signUp,
     emailVerification,
+    // phoneVerification,
     signIn,
     forgetPassword,
     verifyOtp,
