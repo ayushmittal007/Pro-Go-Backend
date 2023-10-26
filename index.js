@@ -1,20 +1,21 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const app = express();
-const cors = require("cors");
 const {errorMiddleware} = require("./middlewares/errorHandling");
 require('dotenv').config();
-
+const cors = require("cors");
+const app = express();
+app.use(
+  cors({
+    origin: "*",
+    credentials: true,
+    optionsSuccessStatus: 200,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({extended : true}))
 const authRouter =  require("./Routes/routes");
 app.use(errorMiddleware);
 app.use("/api/auth",authRouter,errorMiddleware);
-app.use(cors,({
-  origin : '*',
-  credentials : true,
-  optionsSuccessStatus : 200
-}));
 
 const PORT=process.env.PORT || 5000
 

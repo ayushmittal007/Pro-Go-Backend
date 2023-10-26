@@ -61,10 +61,6 @@ const signUp = async (req, res, next) => {
     }
 }
 
-// const phoneVerification = async(req,res,next) => {
-
-// }
-
 const emailVerification = async (req,res,next) => {
   try {
     const { email, otp } = req.body;
@@ -208,7 +204,6 @@ const changePassword = async (req, res , next) => {
 module.exports = {
     signUp,
     emailVerification,
-    // phoneVerification,
     signIn,
     forgetPassword,
     verifyOtp,
