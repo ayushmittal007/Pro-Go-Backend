@@ -1,12 +1,14 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
+const {errorMiddleware} = require("./middlewares/errorHandling");
 require('dotenv').config();
 
 app.use(express.json());
 app.use(express.urlencoded({extended : true}))
 const authRouter =  require("./Routes/routes");
-app.use("/api/auth",authRouter);
+app.use(errorMiddleware);
+app.use("/api/auth",authRouter,errorMiddleware);
 const PORT=process.env.PORT || 5000
 
 //connecting with Database

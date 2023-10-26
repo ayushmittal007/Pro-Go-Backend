@@ -14,23 +14,13 @@ const signUp = async (req, res, next) => {
       const username = input.username;
       const email = input.email;
       const password = input.password;
-      // // const { username, password, email } = req.body;
-      // if (!username || !password || !email) {
-      //   return next(new ErrorHandler(400, "fill all entries"));
-      // }
-      
-      // if(!validateEmail(email)){
-      //   return next(new ErrorHandler(400, "Email is not valid"));
-      // }
 
       let existingEmail = await User.findOne({ email });
       if (existingEmail) {
         if (!existingEmail.isVerified) {
           await User.deleteOne({ email });
         } else {
-           next(
-            new ErrorHandler(400, "User with the same email already exists")
-          );
+           return next(new ErrorHandler(400, "User with the same email already exists"));
         }
       }
 
@@ -39,23 +29,9 @@ const signUp = async (req, res, next) => {
         if (!existingUsername.isVerified) {
           await User.deleteOne({ username });
         } else {
-          return next(
-            new ErrorHandler(400, "User with the same username already exists")
-          );
+          return next(new ErrorHandler(400, "User with the same username already exists"));
         }
       }
-
-      // let existing_User = await User.findOne({ email });
-
-      // if (existing_User) {
-      //     return res.status(400).json({ "message" : "User with this email already exists" });
-      // }
-
-      // let existing_User2 = await User.findOne({ username });
-
-      // if (existing_User2) {
-      //     return res.status(400).json({ "message" : "User with this username already exists" });
-      // }
 
       let oldOTP = await Otp.findOne({ email });
       if (oldOTP) {
@@ -74,7 +50,7 @@ const signUp = async (req, res, next) => {
         {
           "success" : "true" , 
           "message" : "Sign up successful! Please verify your account , using otp send to your mail" ,
-          "data" :  { username, password, email } 
+          "data" :  { username, hashedPassword, email } 
         });
     } catch (err) {
       if(err.isJoi) err.status = 422
@@ -104,40 +80,39 @@ const emailVerification = async (req,res,next) => {
   }
 }
 
-const signIn =  async (req, res) => {
+const signIn =  async (req, res, next) => {
     try {
       const { email, password } = req.body;
       const user = await User.findOne({ email });
       if (!user) {
-        return res.status(400).json({ "message": "No user exist with this username " });
+        return next(new ErrorHandler(400, "No user exist with this email "));
       }
 
       const isMatch = await bcryptjs.compare(password, user.password);
       if (!isMatch) {
-        return res.status(400).json({ "message": "Invalid Password!" });
+        return next(new ErrorHandler(400, "Invalid Password!"));
       }
 
       if (!user.isVerified) {
-        return res.status(400).json({ "message": "Email is not verified" });
+        return next(new ErrorHandler(400, "Email is not verified"));
       }
-
       const token = jwt.sign({ id: user._id }, "secret");
       const hashedPassword = await bcryptjs.hash(password, 6);
-      res.json({ "success" : "true", "message" : "Login successful" ,"data" : { token , username , email , hashedPassword , isVerified} });
+      res.json({ "success" : "true", "message" : "Login successful" ,"data" : { token , email , hashedPassword } });
     } catch (err) {
-      res.status(500).json({"success" : "false", error: err});
+      next(err)
     }
   };
 
-const forgetPassword = async (req, res) => {
+const forgetPassword = async (req, res , next) => {
     try {
       const { email } = req.body;
       let user = await User.findOne({ email });
       if (!user) {
-        return res.status(400).json({ "message": "No user exists with this email" });
+        return next(new ErrorHandler(400, "No user exists with this email"));
       }
       if (!user.isVerified) {
-        return res.status(400).json({ "message": "Email is not verified" });
+        return next(new ErrorHandler(400, "Email is not verified"));
       }
       const otp = Math.floor(100000 + Math.random() * 900000);
       let existingOtp = await Otp.findOne({ email });
@@ -158,7 +133,7 @@ const verifyOtp = async (req, res, next) => {
       const { email, otp } = req.body;
       let OTP = await Otp.findOne({ email });
       if (otp != OTP.otp) {
-        return res.status(400).json({ "message": "Invalid otp" });
+        return next(new ErrorHandler(400, "Invalid otp"));
       }
        Otp.deleteOne({ email });
        User.findOneAndUpdate(
@@ -179,7 +154,7 @@ const resendOtp =  async (req, res, next) => {
       let user = await User.findOne({ email });
 
       if (!user) {
-          return res.status(400).json({ "message": "No user exists with this email" });
+          return next(new ErrorHandler(400, "No user exists with this email"));
       }
 
       const otp = Math.floor(100000 + Math.random() * 900000);
@@ -202,12 +177,12 @@ const resendOtp =  async (req, res, next) => {
     }
   }
 
-const changePassword = async (req, res) => {
+const changePassword = async (req, res , next) => {
     try {
       const { email, newPassword } = req.body;
       let user = await User.findOne({ email });
-      if (!user.isVerified) { 
-        return res.status(400).json({ "message": "User with this email is not verified"});
+      if (!user.isVerified) {
+        return next(new ErrorHandler(400, "User with this email is not verified"));
       }    
       const hashedPassword = await bcryptjs.hash(newPassword, 6);
       User.findOneAndUpdate(
