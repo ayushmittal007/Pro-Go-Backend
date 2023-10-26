@@ -68,7 +68,7 @@ const emailVerification = async (req,res,next) => {
     const { email, otp } = req.body;
 
     let OTP = await Otp.findOne({ email });
-    if (otp != OTP.otp) {
+    if (otp != OTP?.otp) {
       return next(new ErrorHandler(400, "Invalid otp"));
     }  
     await User.findOneAndUpdate(
