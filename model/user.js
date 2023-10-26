@@ -1,4 +1,5 @@
-const Mongoose = require("mongoose")
+const Mongoose = require("mongoose");
+const shortId = require("shortid");
 const UserSchema = new Mongoose.Schema({
   username: {
     type: String,
@@ -17,6 +18,10 @@ const UserSchema = new Mongoose.Schema({
   isVerified : {
     type: Boolean,
     default: false,
+  },
+  shortId: {
+    type: String,
+    default: shortId.generate,
   }
 })
 
