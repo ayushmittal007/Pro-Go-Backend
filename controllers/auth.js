@@ -98,7 +98,7 @@ const signIn =  async (req, res, next) => {
       }
       const token = jwt.sign({ id: user._id }, "secret");
       const hashedPassword = await bcryptjs.hash(password, 6);
-      res.json({ "success" : "true", "message" : "Login successful" ,"data" : { token , email , hashedPassword } });
+      res.json({ "success" : "true", "message" : "Login successful" ,"data" : { token , user } });
     } catch (err) {
       next(err)
     }
