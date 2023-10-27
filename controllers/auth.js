@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const axios = require("axios");
 const {User,Otp} = require("../model");
 const mailer = require("../utils/send_mail");
-const shortId = require("shortid")
 const {ErrorHandler} = require("../middlewares/errorHandling");
 const {authSchema} = require("../utils/joi_validations");
 const shortid = require("shortid");
@@ -174,7 +173,7 @@ const forgetPassword = async (req, res , next) => {
       let user = await User.findOne({ email });
 
       if (!user) {
-          return next(new ErrorHandler(400, "No user exists with this email"));
+        return next(new ErrorHandler(400, "No user exists with this email"));
       }
 
       const otp = Math.floor(100000 + Math.random() * 900000);
@@ -220,7 +219,7 @@ const verifyOtp = async (req, res, next) => {
         expiresIn: 300,
       });
 
-      res.json({ "success": "true", "message": "otp is validated","data" : { token , userId: user._id } });
+      res.json({ "success": "true", "message": "otp is validated","data" : { token } });
     } catch (err) {
       next(err);
     }
