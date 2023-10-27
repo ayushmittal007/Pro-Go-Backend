@@ -181,7 +181,13 @@ const forgetPassword = async (req, res , next) => {
       const existingOtp = await Otp.findOne({ email });
 
       if (existingOtp) {
-        await existingOtp.updateOne({  $set: { otp , createdAt : Date.now()}});
+        if( Date.now() - existingOtp.createdAt >= 60000){
+          await existingOtp.updateOne({  $set: { otp , createdAt : Date.now()}});
+        }else {
+          return res.json({
+            message : "60 sec not completed",
+          })
+        }
       } else {
         await Otp.create({ email: email, otp: otp , createdAt : Date.now()}) 
       }
