@@ -6,6 +6,7 @@ const {User,Otp} = require("../model");
 const mailer = require("../utils/send_mail");
 const {ErrorHandler} = require("../middlewares/errorHandling");
 const {authSchema} = require("../utils/joi_validations");
+const {newSchema} = require("../utils/validator_for_change_pass");
 const shortid = require("shortid");
 const app = express();
 app.use(express.json());
@@ -181,7 +182,7 @@ const forgetPassword = async (req, res , next) => {
 
       if (existingOtp) {
         if( Date.now() - existingOtp.createdAt >= 60000){
-          await existingOtp.updateOne({  $set: { otp , createdAt : Date.now()}});
+          await existingOtp.updateOne({  $set: { otp : otp, createdAt : Date.now()}});
         }else {
           return next(new ErrorHandler(400, "60 seconds not completed"));
         }
@@ -227,7 +228,9 @@ const verifyOtp = async (req, res, next) => {
 
 const changePassword = async (req, res , next) => {
     try {
-      const { email, newPassword } = req.body;
+      const input = await newSchema.validateAsync(req.body);
+      const email = input.email;
+      const newPassword = input.newPassword;
       let user = await User.findOne({ email });
       const token = req.header("verify-token");
       const verified = jwt.verify(token, process.env.RESET_KEY);
