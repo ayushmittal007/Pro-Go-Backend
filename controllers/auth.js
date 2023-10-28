@@ -154,7 +154,7 @@ const forgetPassword = async (req, res , next) => {
       const otp = Math.floor(100000 + Math.random() * 900000);
       let existingOtp = await Otp.findOne({ email });
       if (existingOtp) {
-        existingOtp.updateOne({  $set: { otp , createdAt : Date.now()}});
+        await existingOtp.updateOne({  $set: { otp : otp, createdAt : Date.now()}});
       }
       else {
         Otp.create({ email: email, otp: otp , createdAt : Date.now()}) 
