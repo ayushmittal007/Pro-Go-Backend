@@ -39,7 +39,7 @@ const signUp = async (req, res, next) => {
         if (exsitingUsername) {
           return next(new ErrorHandler(400, "This username already exists"));
         }
-        await User.create({ username : username , password : hashedPassword, email: email}) 
+        User.create({ username : username , password : hashedPassword, email: email}) 
       }
 
       const otp = Math.floor(100000 + Math.random() * 900000);
@@ -86,24 +86,6 @@ const emailVerification = async (req,res,next) => {
     next(err);
   }
 }
-
-// const phoneVerification = async(req,res,next) => {
-//   try {
-//     const { phone_number } = req.body;
-//     const axios = require('axios');
-
-//   const api_key = process.env.API_KEY;
-//   const otp = Math.floor(100000 + Math.random() * 900000);
-
-//   const url = `https://2factor.in/API/V1/${api_key}/SMS/${phone_number}/${otp}/`;
-
-//   const response = await axios.get(url);
-//   res.json({ success: true, message: 'OTP Sent Successfully' });
-
-//   } catch(err){
-//     next(err)
-//   }
-// }
 
 const signIn =  async (req, res, next) => {
     try {
@@ -254,7 +236,6 @@ const changePassword = async (req, res , next) => {
 module.exports = {
     signUp,
     emailVerification,
-    // phoneVerification,
     signIn,
     forgetPassword,
     verifyOtp,
