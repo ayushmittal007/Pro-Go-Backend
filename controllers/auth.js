@@ -55,7 +55,7 @@ const signUp = async (req, res, next) => {
     
       res.status(201).json(
         {
-          "success" : "true" , 
+          success : true , 
           "message" : "Sign up successful! Please verify your account , using otp send to your mail" ,
           "data" :  { username, hashedPassword, email } 
         });
@@ -81,7 +81,7 @@ const emailVerification = async (req,res,next) => {
       { new : true ,}
     );
     Otp.deleteOne({ email });
-    res.json({"success" : "true", "message": "Email Verified" });
+    res.json({success : true, "message": "Email Verified" });
   } catch (err) {
     next(err);
   }
@@ -113,7 +113,7 @@ const signIn =  async (req, res, next) => {
         expiresIn: "2d",
       });
 
-      res.json({ "success" : "true", "message" : "Login successful" ,"data" : {
+      res.json({ success : true, "message" : "Login successful" ,"data" : {
           token,
           username: user.username,
           email,
@@ -144,7 +144,7 @@ const forgetPassword = async (req, res , next) => {
       }
       
       mailer.sendmail(email, otp);
-      res.json({"success" : "true", "message": "Otp is send to your registered email" });
+      res.json({success : true, "message": "Otp is send to your registered email" });
     } catch (err) {
       next(err);
     }
@@ -175,7 +175,7 @@ const forgetPassword = async (req, res , next) => {
       mailer.sendmail(email, otp);
 
       res.json({
-        success: "true",
+        success : true,
         message: "New OTP has been sent to your registered email",
       });
     } catch (err) {
@@ -202,7 +202,7 @@ const verifyOtp = async (req, res, next) => {
         expiresIn: 300,
       });
 
-      res.json({ "success": "true", "message": "otp is validated","data" : { token } });
+      res.json({ success : true , "message": "otp is validated","data" : { token } });
     } catch (err) {
       next(err);
     }
@@ -227,7 +227,7 @@ const changePassword = async (req, res , next) => {
         password: hashedPassword,
       });
       
-      res.json({ "success" : "true" , "message" : "password changed" , "data" : user});
+      res.json({ success : true , "message" : "password changed" , "data" : user});
     } catch (err) {
       next(err);
     }

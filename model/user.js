@@ -5,6 +5,7 @@ const UserSchema = new Mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    trim : true,
   },
   password: {
     type: String,
@@ -14,6 +15,7 @@ const UserSchema = new Mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    trim: true,
   },
   isVerified : {
     type: Boolean,

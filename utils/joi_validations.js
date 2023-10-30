@@ -1,9 +1,11 @@
 const Joi = require("joi");
 
 const authSchema = Joi.object({
-  username: Joi.string().required(),
-  email: Joi.string().email().required(),
-  password: Joi.string().alphanum().min(6).required(),
+  username: Joi.string().min(4).required(),
+  email: Joi.string().email().lowercase().required(),
+  password: Joi.string().min(6)
+  .pattern(new RegExp("^(?=.*[a-zA-Z])(?=.*[!@#$%^&*(),.?\":{}|<>])(?=.*[0-9]).{6,}$"))
+  .required(),
 });
 
 module.exports = {
