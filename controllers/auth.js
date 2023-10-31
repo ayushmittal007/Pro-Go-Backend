@@ -92,12 +92,12 @@ const signIn =  async (req, res, next) => {
       const { email, password } = req.body;
       const user = await User.findOne({ email });
       if (!user) {
-        return next(new ErrorHandler(400, "No user exist with this email "));
+        return next(new ErrorHandler(400, "No user exist with this email"));
       }
 
       const isMatch = await bcryptjs.compare(password, user.password);
       if (!isMatch) {
-        return next(new ErrorHandler(400, "Invalid Password!"));
+        return next(new ErrorHandler(400, "Invalid Credentials!"));
       }
 
       if (!user.isVerified) {
@@ -214,6 +214,11 @@ const changePassword = async (req, res , next) => {
       const email = input.email;
       const newPassword = input.newPassword;
       let user = await User.findOne({ email });
+      const isMatch = await bcryptjs.compare(newPassword, user.password);
+      if(isMatch) {
+        return next(new ErrorHandler(400, "Please Change The Password!"));
+      }
+
       const token = req.header("verify-token");
       const verified = jwt.verify(token, process.env.RESET_KEY);
       if (!verified) {
