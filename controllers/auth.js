@@ -51,7 +51,7 @@ const signUp = async (req, res, next) => {
         await Otp.create({ email: email, otp: otp , createdAt : Date.now()}) 
       }
       
-      mailer.sendmail(email, otp);
+      mailer.sendmail(email, otp , "Email Verification");
     
       res.status(201).json(
         {
@@ -172,7 +172,7 @@ const forgetPassword = async (req, res , next) => {
         await Otp.create({ email: email, otp: otp , createdAt : Date.now()}) 
       }
 
-      mailer.sendmail(email, otp);
+      mailer.sendmail(email, otp , "Reset Password");
 
       res.json({
         success : true,
