@@ -1,1 +1,2 @@
-module.exports.authRouter = require("./routes");
+module.exports.authRouter = require("./auth-routes");
+module.exports.userRouter = require("./upload-routes");

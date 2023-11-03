@@ -61,6 +61,7 @@ const signUp = async (req, res, next) => {
         });
     } catch (err) {
       if(err.isJoi) err.status = 422
+      console.log(err)
       next(err)
     }
 }
