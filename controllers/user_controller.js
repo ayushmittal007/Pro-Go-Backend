@@ -1,4 +1,3 @@
-const { ErrorHandler } = require("../middlewares/errorHandling");
 const profile_photo = require("../model/profile_photo");
 
 const uploadProfilePhoto = async (req, res, next) => {
