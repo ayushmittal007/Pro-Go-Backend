@@ -5,7 +5,6 @@ const getAll = async (req, res, next) => {
         const boardsList = await Board.find({ userId: req.user })
         res.json(boardsList)
     } catch (error) {
-        console.log(error)
         next(error)
     }
 }
@@ -17,7 +16,6 @@ const addBoard =  async (req, res, next) => {
         const respData = await board.save()
         res.status(200).json(respData)
     } catch (error) {
-        console.log(error)
         next(error)
     }
 }

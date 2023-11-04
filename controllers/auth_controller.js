@@ -1,7 +1,6 @@
 const express = require("express");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const axios = require("axios");
 const {User,Otp} = require("../model");
 const mailer = require("../utils/send_mail");
 const {ErrorHandler} = require("../middlewares/errorHandling");
