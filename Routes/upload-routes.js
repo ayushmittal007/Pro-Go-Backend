@@ -5,4 +5,4 @@ const {uploadPhoto} = require("../middlewares/uploadPhoto");
 
 userRouter.post("/upload-photo",uploadPhoto,uploadProfilePhoto);
 
-module.exports = userRouter;
+module.exports = userRouter

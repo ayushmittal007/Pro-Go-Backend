@@ -8,6 +8,6 @@ boardRouter.post("/add", boardController.addBoard);
 boardRouter.get("/:id", auth , boardController.getBoardById);
 boardRouter.get("/:id/lists", auth , boardController.getLists);
 boardRouter.get("/:id/cards", auth , boardController.getCards);
-boardRouter.delete("/:id", auth , boardController.deleteBoard);
+boardRouter.delete("/:id/delete", auth , boardController.deleteBoard);
 
 module.exports = boardRouter;

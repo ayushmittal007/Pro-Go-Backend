@@ -16,13 +16,15 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({extended : true}))
 
-const {authRouter , userRouter , boardRouter, listRouter } =  require("./Routes");
+const {authRouter , userRouter , boardRouter, listRouter, cardRouter } =  require("./Routes");
 
 app.use(errorMiddleware);
 app.use("/api/auth",authRouter,errorMiddleware);
 app.use("/api", userRouter , errorMiddleware);
 app.use("/api/board" , boardRouter , errorMiddleware);
 app.use("/api/list" , listRouter , errorMiddleware);
+app.use("/api/card" , cardRouter , errorMiddleware);
+
 const PORT=process.env.PORT || 5000
 
 //connecting with Database
