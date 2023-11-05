@@ -15,6 +15,7 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({extended : true}))
+app.use(express.static('public'));
 
 const {authRouter , userRouter , boardRouter, listRouter, cardRouter } =  require("./Routes");
 
