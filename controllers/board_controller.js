@@ -2,7 +2,7 @@ const {User , Board , List , Card} = require("../model");
 
 const getAll = async (req, res, next) => {
     try {
-        const boardsList = await Board.find({ userId: req.user })
+        const boardsList = await Board.find({ userId: req.user }).populate("userId","_id username email")
         res.json(boardsList)
     } catch (error) {
         next(error)
@@ -24,7 +24,7 @@ const addBoard =  async (req, res, next) => {
 const getBoardById =  async (req, res, next) => {
     const _id = req.params.id
     try {
-        const board = await Board.findOne({ _id, userId: req.user })
+        const board = await Board.findOne({ _id, userId: req.user }).populate("userId","_id username email")
         if (!board){
             return res.status(404).json({ error: 'Board not found!' })
         }
@@ -42,7 +42,7 @@ const getLists =  async (req, res, next) => {
         if (!board){
             return res.status(404).json({ error: 'Board not found!' })
         }
-        const lists = await List.find({ boardId: _id })
+        const lists = await List.find({ boardId: _id }).populate("boardId"," _id  name")
         res.json(lists)
     } catch (error) {
         next(error)
@@ -57,7 +57,7 @@ const getCards =  async (req, res, next) => {
         if (!board){
             return res.status(404).json({ error: 'Board not found!' })
         }
-        const cards = await Card.find({ boardId: _id })
+        const cards = await Card.find({ boardId: _id }).populate("boardId"," _id  name").populate("listId"," _id  name")
         res.json(cards)
     } catch (error) {
         next(error)
@@ -71,10 +71,9 @@ const deleteBoard = async (req, res, next) => {
         const board = await Board.findOneAndDelete({ _id, userId: req.user })
         if (!board)
             return res.status(404).json({ error: 'Board not found!' })
-        // find all lists within board and delete them as well
+        
         const lists = await List.find({ boardId: _id })
         lists.forEach(async (list) => {
-            // find all cards within each lists and delete them as well
             const cards = await Card.find({ listid: list._id })
             cards.forEach(async (card) => (
                 await Card.deleteOne({ _id: card._id })))

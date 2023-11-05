@@ -14,7 +14,9 @@ const addCard = async (req, res, next) => {
             return res.status(404).json({"message" : "No  list found"})
         }
         const card = new Card(req.body)
+
         const respData = await card.save()
+        respData
         res.json(respData)
     } catch (error) {
         next(error)
@@ -25,7 +27,7 @@ const addCard = async (req, res, next) => {
 const getCardById =  async (req, res, next) => {
     const _id = req.params.id
     try {
-        const cards = await Card.findById(_id)
+        const cards = await Card.findById(_id).populate("boardId", "_id name").populate("listId", "_id name")
         if (!cards){
             return res.status(404).json({ error: 'Card not found!' })
         }

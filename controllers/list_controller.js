@@ -10,8 +10,6 @@ const addList = async (req, res, next) => {
         const respData = await list.save()
         res.json(respData);
     } catch (error) {
-        if (error.name === 'ValidationError')
-            res.status(422)
         next(error)
     }
 }
@@ -20,7 +18,7 @@ const addList = async (req, res, next) => {
 const getListById =  async (req, res, next) => {
     const _id = req.params.id;
     try {
-        const list = await List.findById(_id)
+        const list = await List.findById(_id).populate("boardId" , "name , _id")
         if (!list){
             return res.status(404).json({message : "No lists found"});
         }
@@ -37,7 +35,9 @@ const getCardsOfList = async (req, res, next) => {
         const lists = await List.findById(_id)
         if (!lists)
         return res.status(404).json({"message" : "No list found"})
-        const cards = await Card.find({ listID: _id })
+        const cards = await Card.find({ listID: _id }).populate("listId" , "_id , name")
+        if (!cards)
+        return res.status(404).json({"message" : "No card found"})
         res.json(cards)
     } catch (error) {
         next(error)
