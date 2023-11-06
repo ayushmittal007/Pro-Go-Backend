@@ -17,7 +17,14 @@ app.use(express.json());
 app.use(express.urlencoded({extended : true}))
 app.use(express.static('public'));
 
-const {authRouter , userRouter , boardRouter, listRouter, cardRouter } =  require("./Routes");
+const path = require("path");
+const staticPath = path.join(__dirname, "./views");
+app.use(express.static(staticPath));
+const ejs = require("ejs");
+app.set("view engine", "ejs");
+app.use(express.static(path.join(__dirname, "public")));
+
+const {authRouter , userRouter , boardRouter, listRouter, cardRouter , paymentRouter } =  require("./Routes");
 
 app.use(errorMiddleware);
 app.use("/api/auth",authRouter,errorMiddleware);
@@ -25,6 +32,7 @@ app.use("/api", userRouter , errorMiddleware);
 app.use("/api/board" , boardRouter , errorMiddleware);
 app.use("/api/list" , listRouter , errorMiddleware);
 app.use("/api/card" , cardRouter , errorMiddleware);
+app.use("/payment" , paymentRouter);
 
 const PORT=process.env.PORT || 5000
 
