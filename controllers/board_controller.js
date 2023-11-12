@@ -7,7 +7,7 @@ const getAll = async (req, res, next) => {
         res.status(201).json(
         {
             success : true , 
-            "data" :  { boardsList } 
+            data :  { boardsList } 
         });
     } catch (error) {
         next(error)
@@ -22,7 +22,7 @@ const addBoard =  async (req, res, next) => {
         res.status(201).json(
         {
             success : true , 
-            "data" :  { respData } 
+            data :  { respData } 
         });
     } catch (error) {
         next(error)
@@ -40,7 +40,7 @@ const getBoardById =  async (req, res, next) => {
         res.status(201).json(
         {
             success : true , 
-            "data" :  { board } 
+            data :  { board } 
         });
     } catch (error) {
         next(error)
@@ -59,7 +59,7 @@ const getLists =  async (req, res, next) => {
         res.status(201).json(
         {
             success : true , 
-            "data" :  { lists } 
+            data :  { lists } 
         });
     } catch (error) {
         next(error)
@@ -78,7 +78,7 @@ const getCards =  async (req, res, next) => {
         res.status(201).json(
         {
             success : true , 
-            "data" :  { cards } 
+            data :  { cards } 
         });
     } catch (error) {
         next(error)
@@ -90,9 +90,9 @@ const deleteBoard = async (req, res, next) => {
     const _id = req.params.id
     try {
         const board = await Board.findOneAndDelete({ _id, userId: req.user })
-        if (!board)
+        if (!board){
           return next(new ErrorHandler(400, 'Board not found!'));
-        
+        }        
         const lists = await List.find({ boardId: _id })
         lists.forEach(async (list) => {
             const cards = await Card.find({ listid: list._id })
@@ -103,7 +103,7 @@ const deleteBoard = async (req, res, next) => {
         res.status(201).json(
         {
             success : true , 
-            "message" : "Board Deleted Successfully"
+            message : "Board Deleted Successfully"
         });
     } catch (error) {
         next(error)

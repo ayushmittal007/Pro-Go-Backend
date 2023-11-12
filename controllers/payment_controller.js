@@ -23,7 +23,7 @@ const createOrder = async (req, res, next) => {
         console.log(`The order is created`)
         return res.status(200).json({ 
             success:true,
-            "message" :'Order Created',
+            message :'Order Created',
             order_id:order.id,
             key_id:RAZORPAY_KEY_ID,                
             createdAt : Date.now(),

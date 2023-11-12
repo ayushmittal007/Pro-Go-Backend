@@ -13,7 +13,7 @@ const addList = async (req, res, next) => {
         const respData = await list.save()
         res.status(201).json({
             success : true,
-            "data" : {respData}
+            data : {respData}
         })
         
     } catch (error) {
@@ -31,7 +31,7 @@ const getListById =  async (req, res, next) => {
         }
         res.status(201).json({
             success : true,
-            "data" : {list}
+            data : {list}
         })
     } catch (error) {
         next(error)
@@ -52,7 +52,7 @@ const getCardsOfList = async (req, res, next) => {
         }
         res.status(201).json({
             success : true,
-            "data" : {cards}
+            data : {cards}
         })
     } catch (error) {
         next(error)
@@ -72,7 +72,7 @@ const deleteList =  async (req, res, next) => {
             await Card.deleteOne({ _id: card._id })))
         res.status(201).json({
             success : true,
-            "message" : "List deleted successfully"
+            message : "List deleted successfully"
         })
     } catch (error) {
         next(error)

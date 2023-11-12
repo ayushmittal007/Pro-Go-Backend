@@ -18,8 +18,8 @@ const addCard = async (req, res, next) => {
         const respData = await card.save()
         res.status(201).json({
             status : true,
-            "message" : "Card Added Successfully",
-            "data" : {respData}
+            message : "Card Added Successfully",
+            data : {respData}
         })
     } catch (error) {
         next(error)
@@ -37,7 +37,7 @@ const getCardById =  async (req, res, next) => {
         
         res.status(201).json({
             status : true,
-            "data" : {cards}
+            data : {cards}
         })
     } catch (error) {
         next(error)
@@ -53,7 +53,7 @@ const deleteCard =  async (req, res, next) => {
         }
         res.status(201).json({
             status : true,
-            "message" : "Card Deleted Successfully"
+            message : "Card Deleted Successfully"
         })
         
     } catch (error) {
