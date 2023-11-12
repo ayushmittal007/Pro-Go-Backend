@@ -42,7 +42,7 @@ const sendmail = async (email,otp,topic) => {
         }
     });
   }catch(err){
-    return next(err);
+    console.log(err);
   }
 }
 

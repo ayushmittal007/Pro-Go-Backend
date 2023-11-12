@@ -1,5 +1,6 @@
 const user = require("../model/user");
 const { emailSchema } = require("../utils/joi_validations");
+const {inviteMail} = require("../utils/invite_mail");
 
 const uploadProfilePhoto = async (req, res, next) => {
     try {
@@ -71,8 +72,25 @@ const uploadProfilePhoto = async (req, res, next) => {
     }
   }
 
+  const inviteOthers = async (req, res, next) => {
+    try{
+      const input = await emailSchema.validateAsync(req.body);
+      const email = req.body.email;
+      const sender = await user.findOne({_id : req.user});
+      inviteMail(email,sender.email);
+      res.json({
+        success : true,
+        message : "Invitation sent successfully"
+      });
+    }
+    catch(e){
+      next(e);
+    }
+  }
+
 module.exports = {
   uploadProfilePhoto,
   getPhotoUrl,
-  getUserDetails 
+  getUserDetails,
+  inviteOthers 
 }
