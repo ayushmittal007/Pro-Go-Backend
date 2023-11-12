@@ -15,7 +15,26 @@ const newSchema = Joi.object({
   .required(),
 });
 
+const idSchema = Joi.object({
+  id: Joi.string().required(),
+});
+
+const name_id_Schema = Joi.object({
+  name : Joi.string().required(), 
+  userId: Joi.string().required(),
+});
+
+const addCardSchema = Joi.object({
+  name : Joi.string().required(),
+  boardId: Joi.string().required(),
+  listId: Joi.string().required(),
+  order: Joi.string().required(),
+});
+
 module.exports = {
   authSchema,
-  newSchema
+  newSchema,
+  idSchema,
+  name_id_Schema,
+  addCardSchema,
 }

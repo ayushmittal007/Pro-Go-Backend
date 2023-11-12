@@ -1,9 +1,10 @@
 const {User , Board , List , Card} = require("../model");
 const {ErrorHandler} = require("../middlewares/errorHandling");
+const {idSchema , name_id_Schema} = require("../utils/joi_validations");
 
 const getAll = async (req, res, next) => {
     try {
-        const boardsList = await Board.find({ userId: req.user }).populate("userId","_id username email")
+        const boardsList = await Board.find({ userId: req.user }).populate("userId" , "_id username email")
         res.status(201).json(
         {
             success : true , 
@@ -14,8 +15,8 @@ const getAll = async (req, res, next) => {
     }
 }
 
-
 const addBoard =  async (req, res, next) => {
+    const input = await name_id_Schema.validateAsync(req.body);
     try {
         const board = new Board(req.body)
         const respData = await board.save()
@@ -29,8 +30,8 @@ const addBoard =  async (req, res, next) => {
     }
 }
 
-
 const getBoardById =  async (req, res, next) => {
+    const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id
     try {
         const board = await Board.findOne({ _id, userId: req.user }).populate("userId","_id username email")
@@ -47,8 +48,9 @@ const getBoardById =  async (req, res, next) => {
     }
 }
 
-
 const getLists =  async (req, res, next) => {
+    const input = await idSchema.validateAsync(req.params);
+   
     const _id = req.params.id
     try {
         const board = await Board.findOne({ _id, userId: req.user })
@@ -66,8 +68,9 @@ const getLists =  async (req, res, next) => {
     }
 }
 
-
 const getCards =  async (req, res, next) => {
+    const input = await idSchema.validateAsync(req.params);
+    
     const _id = req.params.id
     try {
         const board = await Board.findOne({ _id, userId: req.user })
@@ -85,8 +88,9 @@ const getCards =  async (req, res, next) => {
     }
 } 
 
-
 const deleteBoard = async (req, res, next) => {
+    const input = await idSchema.validateAsync(req.params);
+   
     const _id = req.params.id
     try {
         const board = await Board.findOneAndDelete({ _id, userId: req.user })
@@ -109,7 +113,6 @@ const deleteBoard = async (req, res, next) => {
         next(error)
     }
 }
-
 
 module.exports = {
     getAll,

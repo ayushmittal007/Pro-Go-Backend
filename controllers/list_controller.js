@@ -1,7 +1,9 @@
 const {User , Board , List , Card} = require("../model");
 const {ErrorHandler} = require("../middlewares/errorHandling");
+const {idSchema,name_id_Schema} = require("../utils/joi_validations");
 
 const addList = async (req, res, next) => {
+    const input = await name_id_Schema.validateAsync(req.body);
     try {
         const boardId = req.body.boardId
         const board = await Board.findOne({ _id: boardId, userId: req.user })
@@ -23,6 +25,7 @@ const addList = async (req, res, next) => {
 
 
 const getListById =  async (req, res, next) => {
+    const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id;
     try {
         const list = await List.findById(_id).populate("boardId" , "name , _id")
@@ -40,6 +43,7 @@ const getListById =  async (req, res, next) => {
 
 
 const getCardsOfList = async (req, res, next) => {
+    const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id
     try {
         const lists = await List.findById(_id)
@@ -61,6 +65,7 @@ const getCardsOfList = async (req, res, next) => {
 
 
 const deleteList =  async (req, res, next) => {
+    const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id
     try {
         const list = await List.findByIdAndDelete(_id)
@@ -78,7 +83,6 @@ const deleteList =  async (req, res, next) => {
         next(error)
     }
 }
-
 
 module.exports = {
     addList,

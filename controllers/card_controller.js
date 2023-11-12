@@ -1,7 +1,9 @@
 const {User , Board , List , Card} = require("../model");
 const {ErrorHandler} = require("../middlewares/errorHandling");
+const {idSchema , addCardSchema} = require("../utils/joi_validations");
 
 const addCard = async (req, res, next) => {
+    const input = await addCardSchema.validateAsync(req.body);
     try {
         const boardId = req.body.boardId
         const board = await Board.findOne({ _id: boardId, userId: req.user })
@@ -28,6 +30,7 @@ const addCard = async (req, res, next) => {
 
 
 const getCardById =  async (req, res, next) => {
+    const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id
     try {
         const cards = await Card.findById(_id).populate("boardId", "_id name").populate("listId", "_id name")
@@ -45,6 +48,7 @@ const getCardById =  async (req, res, next) => {
 }
 
 const deleteCard =  async (req, res, next) => {
+    const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id
     try {
         const card = await Card.findByIdAndDelete(_id)
