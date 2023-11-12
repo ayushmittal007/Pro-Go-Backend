@@ -3,8 +3,8 @@ const {ErrorHandler} = require("../middlewares/errorHandling");
 const {idSchema,name_id_Schema} = require("../utils/joi_validations");
 
 const addList = async (req, res, next) => {
-    const input = await name_id_Schema.validateAsync(req.body);
     try {
+        const input = await name_id_Schema.validateAsync(req.body);
         const boardId = req.body.boardId
         const board = await Board.findOne({ _id: boardId, userId: req.user })
         if (!board){
@@ -25,9 +25,9 @@ const addList = async (req, res, next) => {
 
 
 const getListById =  async (req, res, next) => {
-    const input = await idSchema.validateAsync(req.params);
-    const _id = req.params.id;
     try {
+        const input = await idSchema.validateAsync(req.params);
+        const _id = req.params.id;
         const list = await List.findById(_id).populate("boardId" , "name , _id")
         if (!list){
             return next(new ErrorHandler(400, 'List not found!'));
@@ -43,9 +43,9 @@ const getListById =  async (req, res, next) => {
 
 
 const getCardsOfList = async (req, res, next) => {
-    const input = await idSchema.validateAsync(req.params);
-    const _id = req.params.id
     try {
+        const input = await idSchema.validateAsync(req.params);
+        const _id = req.params.id;
         const lists = await List.findById(_id)
         if (!lists){
             return next(new ErrorHandler(400, 'List not found!'));
@@ -65,9 +65,9 @@ const getCardsOfList = async (req, res, next) => {
 
 
 const deleteList =  async (req, res, next) => {
-    const input = await idSchema.validateAsync(req.params);
-    const _id = req.params.id
     try {
+        const input = await idSchema.validateAsync(req.params);
+        const _id = req.params.id
         const list = await List.findByIdAndDelete(_id)
         if (!list){
             return next(new ErrorHandler(400, 'List not found!'));

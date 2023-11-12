@@ -24,7 +24,11 @@ const UserSchema = new Mongoose.Schema({
   shortId: {
     type: String,
     default: shortId.generate,
-  }
+  },
+  photoUrl: {
+    type: String,
+    default: null,
+  },
 })
 
 const User = Mongoose.model("user", UserSchema)

@@ -1,10 +1,12 @@
-const profile_photo = require("../model/profile_photo");
+const user = require("../model/user");
+const { emailSchema } = require("../utils/joi_validations");
 
 const uploadProfilePhoto = async (req, res, next) => {
     try {
+      const input = await emailSchema.validateAsync(req.body);
       const email = req.body.email;
-      const existing = await profile_photo.findOne({email : email});
-      if(existing){
+      const existing = await user.findOne({email : email});
+      if(existing.photoUrl != null){
         existing.photoUrl = "public/profile_image" + "/" + req.file.filename;
         await existing.save();
         res.json({
@@ -13,11 +15,8 @@ const uploadProfilePhoto = async (req, res, next) => {
         });
       }
       else {
-        let photo = new profile_photo({
-          email : email,
-          photoUrl : "public/profile_image" + "/" + req.file.filename,
-        });
-        photo = await photo.save();
+        existing.photoUrl = "public/profile_image" + "/" + req.file.filename;
+        await existing.save();
         res.json({
           success: true,
           message: "Photo uploaded successfully",
@@ -28,14 +27,45 @@ const uploadProfilePhoto = async (req, res, next) => {
     }
   }
 
-  const getProfilePhoto = async (req, res, next) => {
+  const getPhotoUrl = async (req, res, next) => {
     try {
+      const input = await emailSchema.validateAsync(req.body);
       const email = req.body.email;
-      const photoModel = await profile_photo.findOne({email : email});
-      res.json({
-        success: true,
-        photoUrl : photoModel.photoUrl
-      });
+      const existing = await user.findOne({email : email});
+      if(existing.photoUrl == null){
+        res.json({
+          success: true,
+          message : "No photo found"
+        });
+      }
+      else {
+        res.json({
+          success: true,
+          photoUrl : existing.photoUrl
+        });
+      }
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  const getUserDetails = async (req, res, next) => {
+    try {
+      const input = await emailSchema.validateAsync(req.body);
+      const email = req.body.email;
+      const existing = await user.findOne({email : email});
+      if(existing == null){
+        res.json({
+          success: true,
+          message : "No user found"
+        });
+      }
+      else {
+        res.json({
+          success: true,
+          user : existing
+        });
+      }
     } catch (e) {
       next(e);
     }
@@ -43,5 +73,6 @@ const uploadProfilePhoto = async (req, res, next) => {
 
 module.exports = {
   uploadProfilePhoto,
-  getProfilePhoto 
+  getPhotoUrl,
+  getUserDetails 
 }

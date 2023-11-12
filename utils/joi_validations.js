@@ -19,6 +19,10 @@ const idSchema = Joi.object({
   id: Joi.string().required(),
 });
 
+const emailSchema = Joi.object({
+  email: Joi.string().email().lowercase().trim().required(),
+});
+
 const name_id_Schema = Joi.object({
   name : Joi.string().required(), 
   userId: Joi.string().required(),
@@ -35,6 +39,7 @@ module.exports = {
   authSchema,
   newSchema,
   idSchema,
+  emailSchema,
   name_id_Schema,
   addCardSchema,
 }
