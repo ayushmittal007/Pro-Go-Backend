@@ -1,6 +1,6 @@
 const {User , Board , List , Card} = require("../model");
 const {ErrorHandler} = require("../middlewares/errorHandling");
-const {idSchema , name_id_Schema} = require("../utils/joi_validations");
+const {idSchema , nameSchema} = require("../utils/joi_validations");
 
 const getAll = async (req, res, next) => {
     try {
@@ -18,7 +18,7 @@ const getAll = async (req, res, next) => {
 
 const addBoard =  async (req, res, next) => {
     try {
-        const input = await name_id_Schema.validateAsync(req.body);
+        const input = await nameSchema.validateAsync(req.body);
         const board = new Board({name : req.body.name , userId : req.user._id})
         const respData = await board.save()
         res.status(201).json(
