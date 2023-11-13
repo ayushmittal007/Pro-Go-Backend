@@ -23,7 +23,6 @@ const addList = async (req, res, next) => {
     }
 }
 
-
 const getListById =  async (req, res, next) => {
     try {
         const input = await idSchema.validateAsync(req.params);
@@ -40,7 +39,6 @@ const getListById =  async (req, res, next) => {
         next(error)
     }
 }
-
 
 const getCardsOfList = async (req, res, next) => {
     try {
@@ -62,7 +60,6 @@ const getCardsOfList = async (req, res, next) => {
         next(error)
     }
 }
-
 
 const deleteList =  async (req, res, next) => {
     try {
