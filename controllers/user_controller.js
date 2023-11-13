@@ -91,40 +91,6 @@ const uploadProfilePhoto = async (req, res, next) => {
     }
   }
 
-  const updateUserDetails = async (req, res, next) => { 
-  //   const email = req.body.email;
-    const existing = await user.findOne({email : req.user.email});
-    if(existing == null){
-      res.json({
-        success: true,
-        message : "No user found"
-      });
-    }
-    else {
-      if(req.body.fullName != null){
-        existing[0].fullName = req.body.fullName;
-      }
-      if(req.body.jobTitle != null){  
-        existing[0].jobTitle = req.body.jobTitle;
-      }
-      if(req.body.department != null){
-        existing[0].department = req.body.department;
-      }
-      if(req.body.organisation != null){
-        existing[0].organisation = req.body.organisation;
-      }
-      if(req.body.basedIn != null){
-        existing[0].basedIn = req.body.basedIn;
-      }
-      await existing[0].save();
-      console.log(existing[0]);
-      res.json({
-        success: true,
-        message : "User details updated successfully"
-      });
-    }
-  }
-
   const inviteOthers = async (req, res, next) => {
     try{
       const sender = await user.findOne({_id : req.user.id});
@@ -144,6 +110,5 @@ module.exports = {
   getPhotoUrl,
   addUserDetails,
   getUserDetails,
-  updateUserDetails,
   inviteOthers 
 }

@@ -24,8 +24,7 @@ const emailSchema = Joi.object({
 });
 
 const name_id_Schema = Joi.object({
-  name : Joi.string().required(), 
-  userId: Joi.string().required(),
+  name : Joi.string().required(),
 });
 
 const addCardSchema = Joi.object({
