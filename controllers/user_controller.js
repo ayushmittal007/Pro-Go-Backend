@@ -4,9 +4,7 @@ const {inviteMail} = require("../utils/invite_mail");
 
 const uploadProfilePhoto = async (req, res, next) => {
     try {
-      const input = await emailSchema.validateAsync(req.body);
-      const email = req.body.email;
-      const existing = await user.findOne({email : email});
+      const existing = await user.findOne({email : req.user.email});
       if(existing.photoUrl != null){
         existing.photoUrl = "public/profile_image" + "/" + req.file.filename;
         await existing.save();
@@ -30,9 +28,7 @@ const uploadProfilePhoto = async (req, res, next) => {
 
   const getPhotoUrl = async (req, res, next) => {
     try {
-      const input = await emailSchema.validateAsync(req.body);
-      const email = req.body.email;
-      const existing = await user.findOne({email : email});
+      const existing = await user.findOne({email : req.user.email});
       if(existing.photoUrl == null){
         res.json({
           success: true,
@@ -52,8 +48,7 @@ const uploadProfilePhoto = async (req, res, next) => {
 
   const addUserDetails = async (req, res, next) => {
     try{
-      const email = req.body.email;
-      const existing = await user.findOne({email : email});
+      const existing = await user.findOne({email : req.user.email});
       if(existing == null){
         res.json({
           success: true,
@@ -78,9 +73,7 @@ const uploadProfilePhoto = async (req, res, next) => {
 
   const getUserDetails = async (req, res, next) => {
     try {
-      const input = await emailSchema.validateAsync(req.body);
-      const email = req.body.email;
-      const existing = await user.findOne({email : email});
+      const existing = await user.findOne({email : req.user.email});
       if(existing == null){
         res.json({
           success: true,
@@ -99,8 +92,8 @@ const uploadProfilePhoto = async (req, res, next) => {
   }
 
   const updateUserDetails = async (req, res, next) => { 
-    const email = req.body.email;
-    const existing = await user.find({email : email});
+  //   const email = req.body.email;
+    const existing = await user.findOne({email : req.user.email});
     if(existing == null){
       res.json({
         success: true,
@@ -134,10 +127,8 @@ const uploadProfilePhoto = async (req, res, next) => {
 
   const inviteOthers = async (req, res, next) => {
     try{
-      const input = await emailSchema.validateAsync(req.body);
-      const email = req.body.email;
-      const sender = await user.findOne({_id : req.user});
-      inviteMail(email,sender.email);
+      const sender = await user.findOne({_id : req.user.id});
+      inviteMail(email,req.user.email);
       res.json({
         success : true,
         message : "Invitation sent successfully"

@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken")
+const {User} = require("../model");
 const {ErrorHandler} = require("../middlewares/errorHandling");
 
-const auth = (req, res, next) => {
+const auth = async (req, res, next) => {
     const token = req.header('auth-token')
     try {
         if (!token){
@@ -11,7 +12,8 @@ const auth = (req, res, next) => {
         if (!verified){
             return next(new ErrorHandler(400, "Token verification failed, access denied."));
         }
-        req.user = verified.id
+        const user = await User.findOne({ _id: verified.id });
+        req.user = user
         next()
     } catch (error) {
         next(error)

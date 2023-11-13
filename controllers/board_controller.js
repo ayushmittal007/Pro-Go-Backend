@@ -4,7 +4,7 @@ const {idSchema , name_id_Schema} = require("../utils/joi_validations");
 
 const getAll = async (req, res, next) => {
     try {
-        const boardsList = await Board.find({ userId: req.user }).populate("userId" , "_id username email")
+        const boardsList = await Board.find({ userId: req.user.id }).populate("userId" , "_id username email")
         res.status(201).json(
         {
             success : true , 
@@ -34,7 +34,7 @@ const getBoardById =  async (req, res, next) => {
     try {
         const input = await idSchema.validateAsync(req.params);
         const _id = req.params.id
-        const board = await Board.findOne({ _id, userId: req.user }).populate("userId","_id username email")
+        const board = await Board.findOne({ _id, userId: req.user.id }).populate("userId","_id username email")
         if (!board){
             return next(new ErrorHandler(400, 'Board not found!'));
         }
@@ -52,7 +52,7 @@ const getLists =  async (req, res, next) => {
     try {
         const input = await idSchema.validateAsync(req.params);
         const _id = req.params.id
-        const board = await Board.findOne({ _id, userId: req.user })
+        const board = await Board.findOne({ _id, userId: req.user.id })
         if (!board){
             return next(new ErrorHandler(400, 'Board not found!'));
         }
@@ -71,7 +71,7 @@ const getCards =  async (req, res, next) => {
     try {
         const input = await idSchema.validateAsync(req.params);
         const _id = req.params.id
-        const board = await Board.findOne({ _id, userId: req.user })
+        const board = await Board.findOne({ _id, userId: req.user.id })
         if (!board){
             return next(new ErrorHandler(400, 'Board not found!'));
         }
@@ -90,7 +90,7 @@ const deleteBoard = async (req, res, next) => {
     try {
         const input = await idSchema.validateAsync(req.params);
         const _id = req.params.id
-        const board = await Board.findOneAndDelete({ _id, userId: req.user })
+        const board = await Board.findOneAndDelete({ _id, userId: req.user.id })
         if (!board){
           return next(new ErrorHandler(400, 'Board not found!'));
         }        

@@ -6,7 +6,7 @@ const addList = async (req, res, next) => {
     try {
         const input = await name_id_Schema.validateAsync(req.body);
         const boardId = req.body.boardId
-        const board = await Board.findOne({ _id: boardId, userId: req.user })
+        const board = await Board.findOne({ _id: boardId, userId: req.user.id })
         if (!board){
             return next(new ErrorHandler(400, 'Board not found!'));
         }
