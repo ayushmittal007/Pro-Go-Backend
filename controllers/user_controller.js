@@ -50,6 +50,32 @@ const uploadProfilePhoto = async (req, res, next) => {
     }
   }
 
+  const addUserDetails = async (req, res, next) => {
+    try{
+      const email = req.body.email;
+      const existing = await user.findOne({email : email});
+      if(existing == null){
+        res.json({
+          success: true,
+          message : "No user found"
+        });
+      }else {
+        existing.fullName = req.body.fullName;
+        existing.jobTitle = req.body.jobTitle;
+        existing.department = req.body.department;
+        existing.organisation = req.body.organisation;
+        existing.basedIn = req.body.basedIn;
+        await existing.save();
+        res.json({
+          success: true,
+          message : "User details added successfully"
+        });
+      }
+    }catch(e){
+      next(e);
+    }   
+  }
+
   const getUserDetails = async (req, res, next) => {
     try {
       const input = await emailSchema.validateAsync(req.body);
@@ -72,6 +98,29 @@ const uploadProfilePhoto = async (req, res, next) => {
     }
   }
 
+  const updateUserDetails = async (req, res, next) => { 
+    const email = req.body.email;
+    const existing = await user.find({email : email});
+    if(existing == null){
+      res.json({
+        success: true,
+        message : "No user found"
+      });
+    }
+    else {
+      existing.fullName = req.body.fullName;
+      existing.jobTitle = req.body.jobTitle;
+      existing.department = req.body.department;
+      existing.organisation = req.body.organisation;
+      existing.basedIn = req.body.basedIn;
+      await existing.save();
+      res.json({
+        success: true,
+        message : "User details updated successfully"
+      });
+    }
+  }
+
   const inviteOthers = async (req, res, next) => {
     try{
       const input = await emailSchema.validateAsync(req.body);
@@ -91,6 +140,8 @@ const uploadProfilePhoto = async (req, res, next) => {
 module.exports = {
   uploadProfilePhoto,
   getPhotoUrl,
+  addUserDetails,
   getUserDetails,
+  updateUserDetails,
   inviteOthers 
 }

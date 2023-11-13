@@ -29,6 +29,27 @@ const UserSchema = new Mongoose.Schema({
     type: String,
     default: null,
   },
+  fullName : {
+    type: String,
+    default: null,
+  },  
+  jobTitle:{
+    type: String,
+    default: null,
+  },  
+  department:{
+    type: String,
+    default: null,
+  },  
+  organisation:{
+    type: String,
+    default: null,
+  },  
+  basedIn : {
+    type: String,
+    default: null,
+  },  
+
 })
 
 const User = Mongoose.model("user", UserSchema)
