@@ -49,6 +49,7 @@ const uploadProfilePhoto = async (req, res, next) => {
   const addUserDetails = async (req, res, next) => {
     try{
       const existing = await user.findOne({email : req.user.email});
+      console.log(existing);
       if(existing == null){
         res.json({
           success: true,
@@ -58,7 +59,7 @@ const uploadProfilePhoto = async (req, res, next) => {
         if(req.body.fullName != null){
           existing.fullName = req.body.fullName;
         }
-        if(req.user.jobTitle != null){
+        if(req.body.jobTitle != null){
           existing.jobTitle = req.body.jobTitle;
         }
         if(req.body.department != null){
