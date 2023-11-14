@@ -55,11 +55,24 @@ const uploadProfilePhoto = async (req, res, next) => {
           message : "No user found"
         });
       }else {
-        existing.fullName = req.body.fullName;
-        existing.jobTitle = req.body.jobTitle;
-        existing.department = req.body.department;
-        existing.organisation = req.body.organisation;
-        existing.basedIn = req.body.basedIn;
+        if(req.body.fullName != null){
+          existing.fullName = req.body.fullName;
+        }
+        if(req.user.jobTitle != null){
+          existing.jobTitle = req.body.jobTitle;
+        }
+        if(req.body.department != null){
+          existing.department = req.body.department;
+        }
+        if(req.body.organisation != null){
+          existing.organisation = req.body.organisation;
+        }
+        if(req.body.basedIn != null){
+          existing.basedIn = req.body.basedIn;
+        }
+        if(req.body.region != null){
+          existing.region = req.body.region;
+        }
         await existing.save();
         res.json({
           success: true,

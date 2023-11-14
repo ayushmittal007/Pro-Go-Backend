@@ -49,7 +49,10 @@ const UserSchema = new Mongoose.Schema({
     type: String,
     default: null,
   },  
-
+  region : {
+    type : String , 
+    default : null,
+  }
 })
 
 const User = Mongoose.model("user", UserSchema)
