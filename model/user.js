@@ -27,7 +27,7 @@ const UserSchema = new Mongoose.Schema({
   },
   photoUrl: {
     type: String,
-    default: null,
+    default: "public/profile_image/default.png",
   },
   fullName : {
     type: String,
