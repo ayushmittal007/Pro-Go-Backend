@@ -6,6 +6,7 @@ const {ErrorHandler} = require("../middlewares/errorHandling");
 
 const createOrder = async (req, res, next) => {
     try {
+        const amount = req.body.amount;
         console.log(`inside createOrder`);
         const razorpayInstance = new Razorpay({
             key_id: RAZORPAY_KEY_ID,
@@ -13,7 +14,7 @@ const createOrder = async (req, res, next) => {
         });
 
         const options = {
-            amount: 500 * 100,
+            amount: amount * 100,
             currency: "INR",
             partial_payment: false,
             payment_capture: 1
@@ -36,27 +37,32 @@ const createOrder = async (req, res, next) => {
     }
 };
 
-async function checkPayment(req, res) {
-    console.log("inside checkPayment")
-    // console.log(`req.body.order_id is ${req.body.order_id}`)
-    // console.log(`req.body.payment_id is ${req.body.payment_id}`)
+const checkPayment = async (req, res , next) =>  {
+    try{
+        console.log("inside checkPayment")
+        // console.log(`req.body.order_id is ${req.body.order_id}`)
+        // console.log(`req.body.payment_id is ${req.body.payment_id}`)
 
-    body = req.body.order_id + "|" + req.body.payment_id;
-    var expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_SECRET_KEY)
-      .update(body.toString())
-      .digest("hex");
+        body = req.body.order_id + "|" + req.body.payment_id;
+        var expectedSignature = crypto
+        .createHmac("sha256", process.env.RAZORPAY_SECRET_KEY)
+        .update(body.toString())
+        .digest("hex");
 
-    console.log("sig" + req.body.signature);
-    console.log("sig" + expectedSignature);
+        console.log("sig" + req.body.signature);
+        console.log("sig" + expectedSignature);
 
-    if (expectedSignature === req.body.signature) {
-        console.log("Payment successful");
-        return res.status(200).json({ status: "success" });
-    } else {
-        console.log("Payment failed");
-        return next(new ErrorHandler(400, 'Payment failed'));
-    }   
+        if (expectedSignature === req.body.signature) {
+            console.log("Payment successful");
+            return res.status(200).json({ status: "success" });
+        } else {
+            console.log("Payment failed");
+            return next(new ErrorHandler(400, 'Payment failed'));
+        }   
+    }catch(error){
+        console.log(error)
+        next(error)
+    }
 }
 
 module.exports = { createOrder, checkPayment };
