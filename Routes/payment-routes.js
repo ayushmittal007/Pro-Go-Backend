@@ -7,8 +7,8 @@ paymentRouter.get("/", (req, res)=>{
     res.render("makePayment")
 })
 
-paymentRouter.post("/createOrder" , paymentController.createOrder)
+paymentRouter.post("/createOrder" , auth , paymentController.createOrder)
 
-paymentRouter.post("/checkPayment",paymentController.checkPayment)
+paymentRouter.post("/checkPayment", auth ,paymentController.checkPayment)
 
 module.exports = paymentRouter;

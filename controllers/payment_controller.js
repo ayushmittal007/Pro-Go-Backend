@@ -55,7 +55,7 @@ const checkPayment = async (req, res , next) =>  {
 
         if (expectedSignature === req.body.signature) {
             await User.findOneAndUpdate(
-                { userId: req.user._id },
+                { email: req.user.email },
                 { isPremium: true }
             );
             console.log("Payment successful");
