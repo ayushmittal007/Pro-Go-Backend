@@ -21,6 +21,10 @@ const UserSchema = new Mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  isPremium : {
+    type: Boolean,
+    default: false,
+  },
   shortId: {
     type: String,
     default: shortId.generate,

@@ -3,6 +3,7 @@ require("dotenv").config();
 const { RAZORPAY_KEY_ID, RAZORPAY_SECRET_KEY } = process.env;
 var crypto = require("crypto");
 const {ErrorHandler} = require("../middlewares/errorHandling");
+const { User } = require("../model");
 
 const createOrder = async (req, res, next) => {
     try {
@@ -53,6 +54,10 @@ const checkPayment = async (req, res , next) =>  {
         console.log("sig" + expectedSignature);
 
         if (expectedSignature === req.body.signature) {
+            await User.findOneAndUpdate(
+                { _id: req.user._id },
+                { isPremium: true }
+            );
             console.log("Payment successful");
             return res.status(200).json({ status: "success" });
         } else {
