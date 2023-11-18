@@ -56,7 +56,8 @@ const checkPayment = async (req, res , next) =>  {
         if (expectedSignature === req.body.signature) {
             await User.findOneAndUpdate(
                 { email: req.user.email },
-                { isPremium: true }
+                { isPremium: true } , 
+                { subscriptionType: req.body.subscriptionType}
             );
             console.log("Payment successful");
             return res.status(200).json({ status: "success" });

@@ -25,6 +25,10 @@ const UserSchema = new Mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  subscriptionType : {
+    type: String,
+    default: null,
+  },
   shortId: {
     type: String,
     default: shortId.generate,
