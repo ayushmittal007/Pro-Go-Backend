@@ -18,7 +18,11 @@ const cardSchema = new Mongoose.Schema({
     order: {
         type: String,
         required: true
-    }
+    },
+    daysAlloted : {
+        type: Number,
+        default: 1000000,
+    },
 },
 {
     timestamps: true

@@ -37,6 +37,7 @@ const addCardSchema = Joi.object({
   boardId: Joi.string().required(),
   listId: Joi.string().required(),
   order: Joi.string().required(),
+  daysAlloted : Joi.number(),
 });
 
 module.exports = {

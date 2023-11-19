@@ -1,6 +1,7 @@
 const {User , Board , List , Card} = require("../model");
 const {ErrorHandler} = require("../middlewares/errorHandling");
 const {idSchema , addCardSchema} = require("../utils/joi_validations");
+const moment = require('moment');
 
 const addCard = async (req, res, next) => {
     try {
@@ -65,8 +66,42 @@ const deleteCard =  async (req, res, next) => {
     }
 }
 
+const checkDueDate = async (req, res, next) => {
+    try{
+        const input = await idSchema.validateAsync(req.params);
+        const _id = req.params.id;
+        const cards = await Card.findById(_id).populate("boardId", "_id name").populate("listId", "_id name")
+        if (!cards){
+            return next(new ErrorHandler(400, 'Card not found!'));
+        }
+
+        const createdAtStr = cards.createdAt;
+        const createdDate = moment(createdAtStr);
+
+        const timeAllottedDays = cards.daysAlloted;
+        const currentTime = moment.utc();
+        const timeDifference = currentTime.diff(createdDate, 'days');
+
+        if (timeDifference >= timeAllottedDays) {
+            res.status(201).json({
+                status : true,
+                message : "Time has elapsed"
+            })
+        } else {
+            res.status(201).json({
+                status : true,
+                message : "Time is still left"
+            })
+        }
+    }
+    catch(error){
+        next(error)
+    }
+}
+
 module.exports = {
     getCardById,
     addCard,
-    deleteCard
+    deleteCard,
+    checkDueDate
 }
