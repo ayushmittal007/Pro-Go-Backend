@@ -9,7 +9,11 @@ const boardSchema = new Mongoose.Schema({
         type: Mongoose.Schema.Types.ObjectId,
         ref: 'user',
         required: true
-    }
+    },
+    members : {
+        type : Array,
+        default : []
+    },
 },
 {
     timestamps: true

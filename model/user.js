@@ -61,13 +61,10 @@ const UserSchema = new Mongoose.Schema({
     type : String , 
     default : null,
   },
-  boardsOwned : [
-    {
-      boardId: {
+  boardsOwned : [ {
         type: Mongoose.Schema.Types.ObjectId,
         ref: "board",
       },
-    }
    ],
 })
 
