@@ -20,6 +20,7 @@ const addBoard =  async (req, res, next) => {
     try {
         const input = await nameSchema.validateAsync(req.body);
         const board = new Board({name : req.body.name , userId : req.user._id})
+        await req.user.boardsOwned.push(board._id);
         const respData = await board.save()
         res.status(201).json(
         {

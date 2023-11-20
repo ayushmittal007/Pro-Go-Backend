@@ -60,7 +60,11 @@ const UserSchema = new Mongoose.Schema({
   region : {
     type : String , 
     default : null,
-  }
+  },
+  boardsOwned : [{
+    type: Mongoose.Schema.Types.ObjectId,
+    ref: "board",
+  }],
 })
 
 const User = Mongoose.model("user", UserSchema)
