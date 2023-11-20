@@ -13,11 +13,12 @@ const createPlanner = async (req, res, next) => {
 
 const getPlannerByDate = async (req, res, next) => {
     try {
-        const planner = await Planner.findById(req.body.date);
+        const {date} = req.body;
+        const planner = await Planner.findOne({date});
         if (!planner) {
             return res.status(404).json({ success: false, message: 'Planner not found' });
         }
-        res.status(200).json({ success: true, data: planner });
+        res.json({ success: true, data: planner });
     } catch (error) {
         next(error);
     }
@@ -26,15 +27,16 @@ const getPlannerByDate = async (req, res, next) => {
 const updatePlannerById = async (req, res, next) => {
     try {
         const { taskList, goals, note } = req.body;
+        const id=req.params.id;
         const updatedPlanner = await Planner.findByIdAndUpdate(
-            req.params.id,
+            id,
             { taskList, goals, note },
             { new: true }
         );
         if (!updatedPlanner) {
             return res.status(404).json({ success: false, message: 'Planner not found' });
         }
-        res.status(200).json({ success: true, data: updatedPlanner });
+        res.json({ success: true, data: updatedPlanner });
     } catch (error) {
         next(error);
     }
@@ -42,11 +44,12 @@ const updatePlannerById = async (req, res, next) => {
 
 const deletePlannerById = async (req, res, next) => {
     try {
-        const deletedPlanner = await Planner.findByIdAndDelete(req.params.id);
+        const id=req.params.id;
+        const deletedPlanner = await Planner.findByIdAndDelete(id);
         if (!deletedPlanner) {
             return res.status(404).json({ success: false, message: 'Planner not found' });
         }
-        res.status(200).json({ success: true, data: deletedPlanner });
+        res.json({ success: true, data: deletedPlanner });
     } catch (error) {
         next(error);
     }
