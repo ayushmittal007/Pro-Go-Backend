@@ -48,7 +48,7 @@ const getBoardById = async (req, res, next) => {
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
-    if(!((board.members.includes(req.user._id))  || req.user._id.toString() !== board.userId._id.toString())){
+    if( (!(board.members.includes(req.user._id)))  && req.user._id.toString() !== board.userId._id.toString()){
         return next(new ErrorHandler(400, "You are not the member of this board!"));
     }
 
@@ -69,7 +69,7 @@ const getLists = async (req, res, next) => {
     if (!board) {
         return next(new ErrorHandler(400, "Board not found!"));
     }
-    if(!((board.members.includes(req.user._id))  || req.user._id.toString() !== board.userId._id.toString())){
+    if( (!(board.members.includes(req.user._id)))  && req.user._id.toString() !== board.userId._id.toString()){
         return next(new ErrorHandler(400, "You are not the member of this board!"));
     }
     const lists = await List.find({ boardId: _id }).populate(
@@ -93,9 +93,10 @@ const getCards = async (req, res, next) => {
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
-    if(!((board.members.includes(req.user._id))  || req.user._id.toString() !== board.userId._id.toString())){
-        return next(new ErrorHandler(400, "You are not the member of the board!"));
+    if( (!(board.members.includes(req.user._id)))  && req.user._id.toString() !== board.userId._id.toString()){
+        return next(new ErrorHandler(400, "You are not the member of this board!"));
     }
+    
     const cards = await Card.find({ boardId: _id })
       .populate("boardId", " _id  name")
       .populate("listId", " _id  name");
