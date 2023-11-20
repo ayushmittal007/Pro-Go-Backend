@@ -49,7 +49,7 @@ const getBoardById = async (req, res, next) => {
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
-    if(!((board.members.includes(req.user._id))  || req.user._id !== board.userId._id)){
+    if(!((board.members.includes(req.user._id))  || req.user._id.toString() !== board.userId._id.toString())){
         return next(new ErrorHandler(400, "You are not the member of this board!"));
     }
 
@@ -70,7 +70,7 @@ const getLists = async (req, res, next) => {
     if (!board) {
         return next(new ErrorHandler(400, "Board not found!"));
     }
-    if(!((board.members.includes(req.user._id))  || req.user._id !== board.userId._id)){
+    if(!((board.members.includes(req.user._id))  || req.user._id.toString() !== board.userId._id.toString())){
         return next(new ErrorHandler(400, "You are not the member of this board!"));
     }
     const lists = await List.find({ boardId: _id }).populate(
@@ -94,7 +94,7 @@ const getCards = async (req, res, next) => {
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
-    if(!((board.members.includes(req.user._id))  || req.user._id !== board.userId._id)){
+    if(!((board.members.includes(req.user._id))  || req.user._id.toString() !== board.userId._id.toString())){
         return next(new ErrorHandler(400, "You are not the member of the board!"));
     }
     const cards = await Card.find({ boardId: _id })
@@ -117,9 +117,9 @@ const deleteBoard = async (req, res, next) => {
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
-    if(req.user._id !== board.userId._id){
+    if (req.user._id.toString() !== board.userId._id.toString()) {
         return next(new ErrorHandler(400, "You are not the owner of this board!"));
-    }
+    } 
     const lists = await List.find({ boardId: _id });
     lists.forEach(async (list) => {
       const cards = await Card.find({ listid: list._id });
@@ -137,23 +137,21 @@ const deleteBoard = async (req, res, next) => {
 
 const addMember = async (req, res, next) => {
   try {
-    const sender = await User.findOne({ _id: req.user.id });
+    const sender = await User.findOne({ _id: req.user._id });
     const body = await emailSchema.validateAsync(req.body);
     const to_email = body.email;
     const board = await Board.findOne({ _id: req.params.id });
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
-    if (board.userId._id !== req.user.id) {
-      return next(
-        new ErrorHandler(400, "You are not the owner of this board!")
-      );
-    }
     if (board.members.includes(to_email)) {
       return next(
         new ErrorHandler(400, "User already a member of this board!")
       );
     }
+    if (req.user._id.toString() !== board.userId._id.toString()) {
+        return next(new ErrorHandler(400, "You are not the owner of this board!"));
+    }    
     console.log(board.members)
     board.members.push(to_email);
     await board.save();
