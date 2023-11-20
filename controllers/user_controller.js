@@ -105,7 +105,7 @@ const uploadProfilePhoto = async (req, res, next) => {
     }
   }
 
-  const inviteOthers = async (req, res, next) => {
+  const inviteWorkSpaceMember = async (req, res, next) => {
     try{
       const sender = await user.findOne({_id : req.user.id});
       inviteMail(email,req.user.email);
@@ -124,5 +124,5 @@ module.exports = {
   getPhotoUrl,
   addUserDetails,
   getUserDetails,
-  inviteOthers 
+  inviteWorkSpaceMember 
 }

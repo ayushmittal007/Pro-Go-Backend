@@ -66,6 +66,10 @@ const UserSchema = new Mongoose.Schema({
         ref: "board",
       },
    ],
+  usersWorkSpcaeMember : [ {
+  type: Mongoose.Schema.Types.ObjectId,
+  ref: "user",   
+  }],
 })
 
 const User = Mongoose.model("user", UserSchema)

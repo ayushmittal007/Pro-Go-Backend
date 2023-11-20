@@ -1,15 +1,16 @@
 const nodemailer = require('nodemailer');
 
-const inviteMail = async (email,senderEmail) => {
+const inviteMail = async (to_email,senderEmail,Link) => {
   try{
     const msg = {
         from: process.env.MAIL_ID,
-        to: email,
+        to: to_email,
         html: 
         `<p style="margin-bottom: 30px;"> We are thrilled to tell you that you have been invited to collaborate on a project by ${senderEmail} 
         </p>
+        <a href="${Link}" style="background-color: aliceblue">Click here to accept the invitation</a>
         <p style="font-size: 10px;">If you did not want to collaborate, please ignore this email. Thank you.
-        </p>`
+        </p> `
       ,
     }
 

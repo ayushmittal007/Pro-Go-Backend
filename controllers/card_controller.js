@@ -11,6 +11,9 @@ const addCard = async (req, res, next) => {
         if (!board){
             return next(new ErrorHandler(400, 'Board not found!'));
         }
+        if((board.members.includes(req.user._id))  || req.user._id === board.userId){
+            return next(new ErrorHandler(400, "You are not the member of this board!"));
+        }
         const listId = req.body.listId
         const list = await List.findOne({ _id: listId, boardId: boardId })
         if (!list){
@@ -60,7 +63,6 @@ const deleteCard =  async (req, res, next) => {
             status : true,
             message : "Card Deleted Successfully"
         })
-        
     } catch (error) {
         next(error)
     }
