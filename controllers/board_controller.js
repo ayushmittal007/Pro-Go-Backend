@@ -24,8 +24,7 @@ const getAll = async (req, res, next) => {
 
 const addBoard = async (req, res, next) => {
   try {
-    const input = await nameSchema.validateAsync(req.body);
-    const board = new Board({ name: req.body.name, userId: req.user._id });
+    const board = new Board({ name: req.body.name, userId: req.user._id , templateLink : req.body.templateLink});
     const respData = await board.save();
     req.user.boardsOwned.push(board._id);
     await req.user.save();
