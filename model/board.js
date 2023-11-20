@@ -14,6 +14,10 @@ const boardSchema = new Mongoose.Schema({
         type : Array,
         default : []
     },
+    templateLink : {
+        type : String,
+        default : ""
+    },
 },
 {
     timestamps: true
