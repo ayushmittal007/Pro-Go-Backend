@@ -6,3 +6,4 @@ module.exports.cardRouter = require("./card-routes");
 module.exports.paymentRouter = require("./payment-routes");
 module.exports.searchRouter = require("./search-routes");
 module.exports.plannerRouter = require("./planner-routes");
+module.exports.commentRouter = require("./comment-routes");

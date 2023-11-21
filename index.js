@@ -25,7 +25,7 @@ const ejs = require("ejs");
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 
-const {authRouter , userRouter , boardRouter, listRouter, cardRouter , paymentRouter , searchRouter , plannerRouter } =  require("./Routes");
+const {authRouter , userRouter , boardRouter, listRouter, cardRouter , paymentRouter , searchRouter , plannerRouter , commentRouter} =  require("./Routes");
 
 app.use(errorMiddleware);
 app.use("/api/auth",authRouter,errorMiddleware);
@@ -34,6 +34,7 @@ app.use("/api/board" , boardRouter , errorMiddleware);
 app.use("/api/list" , listRouter , errorMiddleware);
 app.use("/api/card" , cardRouter , errorMiddleware);
 app.use("/api/planner" , plannerRouter , errorMiddleware);
+app.use("/api/comment" , commentRouter , errorMiddleware);
 app.use("/payment" , paymentRouter);
 app.use("/api" ,searchRouter);
 

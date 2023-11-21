@@ -4,3 +4,4 @@ module.exports.Board = require("./board");
 module.exports.List = require("./list");
 module.exports.Card = require("./card");
 module.exports.Planner = require("./planner");
+module.exports.Comment = require("./comment");

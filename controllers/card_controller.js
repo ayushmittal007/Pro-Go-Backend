@@ -19,8 +19,13 @@ const addCard = async (req, res, next) => {
         if (!list){
             return next(new ErrorHandler(400, 'List not found!'));
         }
-        const card = new Card(req.body)
-
+        const card = new Card({
+            name : req.body.name,
+            boardId : boardId,
+            listId : listId,
+            userId : req.user._id,
+            daysAlloted : req.body.daysAlloted
+        })
         const respData = await card.save()
         res.status(201).json({
             status : true,
@@ -31,7 +36,6 @@ const addCard = async (req, res, next) => {
         next(error)
     }
 }
-
 
 const getCardById =  async (req, res, next) => {
     try {
@@ -105,5 +109,5 @@ module.exports = {
     getCardById,
     addCard,
     deleteCard,
-    checkDueDate
+    checkDueDate,
 }

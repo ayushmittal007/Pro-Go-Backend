@@ -15,14 +15,15 @@ const cardSchema = new Mongoose.Schema({
         ref: 'list',
         required: true
     },
-    order: {
-        type: String,
+    userId : {
+        type: Mongoose.Schema.Types.ObjectId,
+        ref: 'user',
         required: true
-    },
+    },  
     daysAlloted : {
         type: Number,
         default: 1000000,
-    },
+    }
 },
 {
     timestamps: true
