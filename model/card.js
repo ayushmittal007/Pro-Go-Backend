@@ -34,7 +34,7 @@ const cardSchema = new Mongoose.Schema({
     },
     color : {
         type : String,
-        default : "#0079bf"
+        default : "white"
     },
 },
 {
