@@ -47,7 +47,7 @@ const updateComment = async (req, res, next) => {
         if(req.user._id.toString() != comment.userId.toString()){
             return next(new ErrorHandler(400, 'You are not allowed to update this comment!'));
         }
-        const newComment = req.body.comment;
+        const newComment = req.body.text;
         comment.text = newComment;
         await comment.save();
         res.status(200).json({status : true, message : "Comment updated successfully" , data : comment});
