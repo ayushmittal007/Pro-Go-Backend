@@ -30,6 +30,7 @@ const nameSchema = Joi.object({
 const name_id_Schema = Joi.object({
   name : Joi.string().required(),
   boardId: Joi.string().required(),
+  color : Joi.string(),
 });
 
 module.exports = {
