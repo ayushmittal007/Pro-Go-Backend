@@ -111,13 +111,14 @@ const deleteCard =  async (req, res, next) => {
     try {
         const input = await idSchema.validateAsync(req.params);
         const _id = req.params.id
-        const card = await Card.findByIdAndDelete(_id)
-        if (!card){
+        const exist = await Card.findById(_id)
+        if (!exist){
             return next(new ErrorHandler(400, 'Card not found!'));
         }
         if(req.user._id.toString() != card.userId.toString()){
             return next(new ErrorHandler(400, 'You are not allowed to delete this card!'));
         }
+        const card = await Card.findByIdAndDelete(_id)
         res.status(201).json({
             status : true,
             message : "Card Deleted Successfully"

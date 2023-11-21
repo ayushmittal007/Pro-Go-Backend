@@ -66,7 +66,7 @@ const deleteComment = async (req, res, next) => {
         if(req.user._id.toString() != comment.userId.toString()){
             return next(new ErrorHandler(400, 'You are not allowed to delete this comment!'));
         }
-        await Comment.deleteOne(commentId);
+        await Comment.findByIdAndDelete(commentId);
         res.status(200).json({status : true, message : "Comment deleted successfully"});
     }catch(error){
         next(error)
