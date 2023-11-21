@@ -56,18 +56,16 @@ const getBoardById = async (req, res, next) => {
   try {
     const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id;
-    const board = await Board.findOne({ _id }).populate(
-      "userId",
-      "_id username email usersWorkSpcaeMember"
-    );
+    const board = await Board.findOne({ _id })
+    const userId = await User.findById(board.userId.toString());
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
 
     if (
       !board.members.includes(req.user._id) &&
-      req.user._id.toString() !== board.userId._id.toString() &&
-      !board.userId.usersWorkSpcaeMember.includes(req.user.email)
+      req.user._id.toString() !== userId._id.toString() &&
+      !userId.usersWorkSpcaeMember.includes(req.user.email)
     ) {
       return next(
         new ErrorHandler(400, "You are not the member of this board!")
@@ -86,19 +84,19 @@ const getBoardById = async (req, res, next) => {
 const updateBoardById = async (req, res, next) => {
   try {
     const _id = req.params.id;
-    const board = await Board.findOne({ _id }).populate(
-      "userId",
-      "_id username email usersWorkSpcaeMember"
-    );
+    const board = await Board.findOne({ _id })
+    const userId = await User.findById(board.userId.toString());
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
+
     if (
-      req.user._id.toString() !== board.userId.toString() &&
-      !board.userId.usersWorkSpcaeMember.includes(req.user.email)
+      !board.members.includes(req.user._id) &&
+      req.user._id.toString() !== userId._id.toString() &&
+      !userId.usersWorkSpcaeMember.includes(req.user.email)
     ) {
       return next(
-        new ErrorHandler(400, "You are not allowed to update this Board !")
+        new ErrorHandler(400, "You are not the member of this board!")
       );
     }
     const respData = await Board.findByIdAndUpdate(_id, req.body, {
@@ -118,17 +116,16 @@ const getLists = async (req, res, next) => {
   try {
     const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id;
-    const board = await Board.findOne({ _id }).populate(
-      "userId",
-      "_id username email usersWorkSpcaeMember"
-    );
+    const board = await Board.findOne({ _id })
+    const userId = await User.findById(board.userId.toString());
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
+
     if (
       !board.members.includes(req.user._id) &&
-      req.user._id.toString() !== board.userId._id.toString() &&
-      !board.userId.usersWorkSpcaeMember.includes(req.user.email)
+      req.user._id.toString() !== userId._id.toString() &&
+      !userId.usersWorkSpcaeMember.includes(req.user.email)
     ) {
       return next(
         new ErrorHandler(400, "You are not the member of this board!")
@@ -151,17 +148,16 @@ const getCards = async (req, res, next) => {
   try {
     const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id;
-    const board = await Board.findOne({ _id }).populate(
-      "userId",
-      "_id username email usersWorkSpcaeMember"
-    );
+    const board = await Board.findOne({ _id })
+    const userId = await User.findById(board.userId.toString());
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
+
     if (
       !board.members.includes(req.user._id) &&
-      req.user._id.toString() !== board.userId._id.toString() &&
-      !board.userId.usersWorkSpcaeMember.includes(req.user.email)
+      req.user._id.toString() !== userId._id.toString() &&
+      !userId.usersWorkSpcaeMember.includes(req.user.email)
     ) {
       return next(
         new ErrorHandler(400, "You are not the member of this board!")
@@ -183,20 +179,20 @@ const getCards = async (req, res, next) => {
 const deleteBoard = async (req, res, next) => {
   try {
     const input = await idSchema.validateAsync(req.params);
-    const _id = req.params.id;
-    const board = await Board.findOne({ _id }).populate(
-      "userId",
-      "_id username email usersWorkSpcaeMember"
-    );
+     const _id = req.params.id;
+    const board = await Board.findOne({ _id })
+    const userId = await User.findById(board.userId.toString());
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
+
     if (
-      req.user._id.toString() !== board.userId.toString() &&
-      !board.userId.usersWorkSpcaeMember.includes(req.user.email)
+      !board.members.includes(req.user._id) &&
+      req.user._id.toString() !== userId._id.toString() &&
+      !userId.usersWorkSpcaeMember.includes(req.user.email)
     ) {
       return next(
-        new ErrorHandler(400, "You are not allowed to delete this Board !")
+        new ErrorHandler(400, "You are not the member of this board!")
       );
     }
     const lists = await List.find({ boardId: _id });
@@ -220,26 +216,23 @@ const addMember = async (req, res, next) => {
     const sender = await User.findOne({ _id: req.user._id });
     const body = await emailSchema.validateAsync(req.body);
     const to_email = body.email;
-    const board = await Board.findOne({ _id: req.params.id });
+    const _id = req.params.id;
+    const board = await Board.findOne({ _id })
+    const userId = await User.findById(board.userId.toString());
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
-    if (board.members.includes(to_email)) {
-      return next(
-        new ErrorHandler(400, "User already a member of this board!")
-      );
-    }
+
     if (
-      req.user._id.toString() !== board.userId.toString() &&
-      !board.userId.usersWorkSpcaeMember.includes(req.user.email)
+      !board.members.includes(req.user._id) &&
+      req.user._id.toString() !== userId._id.toString() &&
+      !userId.usersWorkSpcaeMember.includes(req.user.email)
     ) {
       return next(
-        new ErrorHandler(
-          400,
-          "You are not allowed to add anyoe to this Board !"
-        )
+        new ErrorHandler(400, "You are not the member of this board!")
       );
     }
+
     console.log(board.members);
     board.members.push(to_email);
     await board.save();
@@ -259,14 +252,17 @@ const addMember = async (req, res, next) => {
 
 const getAllMemberInTheBoard = async (req, res, next) => {
   try {
-    const board = await Board.findOne({ _id: req.params.id });
+    const _id = req.params.id;
+    const board = await Board.findOne({ _id })
+    const userId = await User.findById(board.userId.toString());
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
+
     if (
       !board.members.includes(req.user._id) &&
-      req.user._id.toString() !== board.userId._id.toString() &&
-      !board.userId.usersWorkSpcaeMember.includes(req.user.email)
+      req.user._id.toString() !== userId._id.toString() &&
+      !userId.usersWorkSpcaeMember.includes(req.user.email)
     ) {
       return next(
         new ErrorHandler(400, "You are not the member of this board!")
