@@ -44,7 +44,9 @@ const getCardById =  async (req, res, next) => {
         if (!cards){
             return next(new ErrorHandler(400, 'Card not found!'));
         }
-        
+        if(req.user._id.toString() != cards.userId.toString()){
+            return next(new ErrorHandler(400, 'You are not allowed to access this card!'));
+        }
         res.status(201).json({
             status : true,
             data : {cards}
@@ -62,7 +64,7 @@ const updateCard =  async (req, res, next) => {
         if (!card){
             return next(new ErrorHandler(400, 'Card not found!'));
         }
-        if(req.user._id != card.userId){
+        if(req.user._id.toString() != card.userId.toString()){
             return next(new ErrorHandler(400, 'You are not allowed to update this card!'));
         }
         const respData = await Card.findByIdAndUpdate(_id, req.body, {new : true})
@@ -84,7 +86,7 @@ const addDataToCard = async (req, res, next) => {
         if (!card){
             return next(new ErrorHandler(400, 'Card not found!'));
         }
-        if(req.user._id != card.userId){
+        if(req.user._id.toString() != card.userId.toString()){
             return next(new ErrorHandler(400, 'You are not allowed to add to this card!'));
         }
         card.data.push(dataToAdd)
@@ -106,6 +108,9 @@ const deleteCard =  async (req, res, next) => {
         const card = await Card.findByIdAndDelete(_id)
         if (!card){
             return next(new ErrorHandler(400, 'Card not found!'));
+        }
+        if(req.user._id.toString() != card.userId.toString()){
+            return next(new ErrorHandler(400, 'You are not allowed to delete this card!'));
         }
         res.status(201).json({
             status : true,
