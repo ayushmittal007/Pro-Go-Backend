@@ -6,10 +6,23 @@ const addList = async (req, res, next) => {
     try {
         const input = await name_id_Schema.validateAsync(req.body);
         const boardId = req.body.boardId
-        const board = await Board.findOne({ _id: boardId, userId: req.user._id })
+        const board = await Board.findOne({ boardId}).populate(
+            "userId",
+            "_id username email usersWorkSpcaeMember"
+        );
         if (!board){
             return next(new ErrorHandler(400, 'Board not found!'));
         }
+        if (
+            !board.members.includes(req.user._id) &&
+            req.user._id.toString() !== board.userId._id.toString() &&
+            !board.userId.usersWorkSpcaeMember.includes(req.user.email)
+          ) {
+            return next(
+              new ErrorHandler(400, "You can not add list !")
+            );
+        }
+
         const listName = req.body.name;
         const exist = await List.findOne({ name: listName, boardId: boardId });
         if(exist){
@@ -39,7 +52,23 @@ const getListById =  async (req, res, next) => {
     try {
         const input = await idSchema.validateAsync(req.params);
         const _id = req.params.id;
-        const list = await List.findById(_id).populate("boardId" , "name , _id")
+        const list = await List.findById(_id)
+        const board = await Board.findOne({ _id : list.boardId}).populate(
+            "userId",
+            "_id username email usersWorkSpcaeMember"
+        );
+        if (!board){
+            return next(new ErrorHandler(400, 'Board not found!'));
+        }
+        if (
+            !board.members.includes(req.user._id) &&
+            req.user._id.toString() !== board.userId._id.toString() &&
+            !board.userId.usersWorkSpcaeMember.includes(req.user.email)
+          ) {
+            return next(
+              new ErrorHandler(400, "You can not get this list!")
+            );
+        }
         if (!list){
             return next(new ErrorHandler(400, 'List not found!'));
         }
@@ -60,10 +89,30 @@ const getCardsOfList = async (req, res, next) => {
         if (!lists){
             return next(new ErrorHandler(400, 'List not found!'));
         }
+
         const cards = await Card.find({ listID: _id }).populate("listId" , "_id , name")
         if (!cards){
             return next(new ErrorHandler(400, 'Card not found!'));
         }
+
+        const boardId = lists.boardId;
+        const board = await Board.findOne({ boardId}).populate(
+            "userId",
+            "_id username email usersWorkSpcaeMember"
+        );
+        if (!board){
+            return next(new ErrorHandler(400, 'Board not found!'));
+        }
+        if (
+            !board.members.includes(req.user._id) &&
+            req.user._id.toString() !== board.userId._id.toString() &&
+            !board.userId.usersWorkSpcaeMember.includes(req.user.email)
+          ) {
+            return next(
+              new ErrorHandler(400, "You are not allowed to access cards of this card!")
+            );
+        }
+        
         res.status(201).json({
             success : true,
             data : {cards}
@@ -80,11 +129,21 @@ const updateList =  async (req, res, next) => {
         if (!list){
             return next(new ErrorHandler(400, 'List not found!'));
         }
-        const boardId = list.boardId;
-        const board = await Board.findOne({ _id: boardId })
-        const userId = board.userId;
-        if(req.user._id.toString() != userId.toString()){
-            return next(new ErrorHandler(400, 'You are not allowed to update this list !'));
+        const board = await Board.findOne({ _id : list.boardId}).populate(
+            "userId",
+            "_id username email usersWorkSpcaeMember"
+        );
+        if (!board){
+            return next(new ErrorHandler(400, 'Board not found!'));
+        }
+        if (
+            !board.members.includes(req.user._id) &&
+            req.user._id.toString() !== board.userId._id.toString() &&
+            !board.userId.usersWorkSpcaeMember.includes(req.user.email)
+          ) {
+            return next(
+              new ErrorHandler(400, "You can not update this list!")
+            );
         }
         const respData = await List.findByIdAndUpdate(_id, req.body, {new : true})
         res.status(201).json({
@@ -105,8 +164,22 @@ const deleteList =  async (req, res, next) => {
         if (!list){
             return next(new ErrorHandler(400, 'List not found!'));
         }
-        if(req.user._id.toString() != list.userId.toString()){
-            return next(new ErrorHandler(400, 'You are not allowed to delete this list !'));
+        const listId = await List.findById(_id)
+        const board = await Board.findOne({ _id : listId.boardId}).populate(
+            "userId",
+            "_id username email usersWorkSpcaeMember"
+        );
+        if (!board){
+            return next(new ErrorHandler(400, 'Board not found!'));
+        }
+        if (
+            !board.members.includes(req.user._id) &&
+            req.user._id.toString() !== board.userId._id.toString() &&
+            !board.userId.usersWorkSpcaeMember.includes(req.user.email)
+          ) {
+            return next(
+              new ErrorHandler(400, "You can not get this list!")
+            );
         }
         const cards = await Card.find({ listid: _id })
         cards.forEach(async (card) => (

@@ -6,12 +6,21 @@ const moment = require('moment');
 const addCard = async (req, res, next) => {
     try {
         const boardId = req.body.boardId
-        const board = await Board.findOne({ _id: boardId, userId: req.user._id })
+        const board = await Board.findOne({ boardId}).populate(
+            "userId",
+            "_id username email usersWorkSpcaeMember"
+        );
         if (!board){
             return next(new ErrorHandler(400, 'Board not found!'));
         }
-        if((board.members.includes(req.user._id))  || req.user._id === board.userId){
-            return next(new ErrorHandler(400, "You are not the member of this board!"));
+        if (
+            !board.members.includes(req.user._id) &&
+            req.user._id.toString() !== board.userId._id.toString() &&
+            !board.userId.usersWorkSpcaeMember.includes(req.user.email)
+          ) {
+            return next(
+              new ErrorHandler(400, "You can not add card!")
+            );
         }
         const listId = req.body.listId
         const list = await List.findOne({ _id: listId, boardId: boardId })
@@ -20,7 +29,7 @@ const addCard = async (req, res, next) => {
         }
         const cardName = req.body.name;
         const existing = await Card.findOne({ name: cardName, listId: listId , boardId : boardId });
-        console.log(existing)
+        // console.log(existing)
         if(existing){
             return next(new ErrorHandler(400, 'Card with this name already exists!'));
         }
@@ -49,13 +58,20 @@ const getCardById =  async (req, res, next) => {
     try {
         const input = await idSchema.validateAsync(req.params);
         const _id = req.params.id
-        const cards = await Card.findById(_id).populate("boardId", "_id name").populate("listId", "_id name")
+        const cards = await Card.findById(_id);
+        // console.log(cards)
+        const board = await Board.findOne({ _id : cards.boardId}).populate(
+        "userId", 
+        "_id username email usersWorkSpcaeMember"
+        );
+
         if (!cards){
             return next(new ErrorHandler(400, 'Card not found!'));
         }
-        if(req.user._id.toString() != cards.userId.toString()){
+        if(req.user._id.toString() != board.userId._id.toString() && !board.members.includes(req.user._id) && !board.userId.usersWorkSpcaeMember.includes(req.user.email)){
             return next(new ErrorHandler(400, 'You are not allowed to access this card!'));
         }
+
         res.status(201).json({
             status : true,
             data : {cards}
@@ -69,11 +85,17 @@ const updateCard =  async (req, res, next) => {
     try{
         const input = await idSchema.validateAsync(req.params);
         const _id = req.params.id
-        const card = await Card.findById(_id)
-        if (!card){
+        const cards = await Card.findById(_id);
+        // console.log(cards)
+        const board = await Board.findOne({ _id : cards.boardId}).populate(
+        "userId", 
+        "_id username email usersWorkSpcaeMember"
+        );
+
+        if (!cards){
             return next(new ErrorHandler(400, 'Card not found!'));
         }
-        if(req.user._id.toString() != card.userId.toString()){
+        if(req.user._id.toString() != board.userId._id.toString() && !board.members.includes(req.user._id) && !board.userId.usersWorkSpcaeMember.includes(req.user.email)){
             return next(new ErrorHandler(400, 'You are not allowed to update this card!'));
         }
         const respData = await Card.findByIdAndUpdate(_id, req.body, {new : true})
@@ -90,14 +112,21 @@ const updateCard =  async (req, res, next) => {
 const addDataToCard = async (req, res, next) => {
     try{
         const dataToAdd = req.body.data;
-        const _id = req.params.id;
-        const card = await Card.findById(_id)
-        if (!card){
+        const _id = req.params.id
+        const cards = await Card.findById(_id);
+        // console.log(cards)
+        const board = await Board.findOne({ _id : cards.boardId}).populate(
+        "userId", 
+        "_id username email usersWorkSpcaeMember"
+        );
+
+        if (!cards){
             return next(new ErrorHandler(400, 'Card not found!'));
         }
-        if(req.user._id.toString() != card.userId.toString()){
+        if(req.user._id.toString() != board.userId._id.toString() && !board.members.includes(req.user._id) && !board.userId.usersWorkSpcaeMember.includes(req.user.email)){
             return next(new ErrorHandler(400, 'You are not allowed to add to this card!'));
         }
+
         card.data.push(dataToAdd)
         const respData = await card.save()
         res.status(201).json({
@@ -113,14 +142,21 @@ const addDataToCard = async (req, res, next) => {
 const deleteCard =  async (req, res, next) => {
     try {
         const input = await idSchema.validateAsync(req.params);
-        const _id = req.params.id
-        const exist = await Card.findById(_id)
-        if (!exist){
+       const _id = req.params.id
+        const cards = await Card.findById(_id);
+        // console.log(cards)
+        const board = await Board.findOne({ _id : cards.boardId}).populate(
+        "userId", 
+        "_id username email usersWorkSpcaeMember"
+        );
+
+        if (!cards){
             return next(new ErrorHandler(400, 'Card not found!'));
         }
-        if(req.user._id.toString() != card.userId.toString()){
+        if(req.user._id.toString() != board.userId._id.toString() && !board.members.includes(req.user._id) && !board.userId.usersWorkSpcaeMember.includes(req.user.email)){
             return next(new ErrorHandler(400, 'You are not allowed to delete this card!'));
         }
+
         const card = await Card.findByIdAndDelete(_id)
         res.status(201).json({
             status : true,
@@ -134,10 +170,19 @@ const deleteCard =  async (req, res, next) => {
 const checkDueDate = async (req, res, next) => {
     try{
         const input = await idSchema.validateAsync(req.params);
-        const _id = req.params.id;
-        const cards = await Card.findById(_id).populate("boardId", "_id name").populate("listId", "_id name")
+        const _id = req.params.id
+        const cards = await Card.findById(_id);
+        // console.log(cards)
+        const board = await Board.findOne({ _id : cards.boardId}).populate(
+        "userId", 
+        "_id username email usersWorkSpcaeMember"
+        );
+
         if (!cards){
             return next(new ErrorHandler(400, 'Card not found!'));
+        }
+        if(req.user._id.toString() != board.userId._id.toString() && !board.members.includes(req.user._id) && !board.userId.usersWorkSpcaeMember.includes(req.user.email)){
+            return next(new ErrorHandler(400, 'You are not allowed to access due date of this card!'));
         }
 
         const createdAtStr = cards.createdAt;
