@@ -31,7 +31,11 @@ const cardSchema = new Mongoose.Schema({
     data : {
         type : Array,
         default : []
-    }
+    },
+    color : {
+        type : String,
+        default : "#0079bf"
+    },
 },
 {
     timestamps: true

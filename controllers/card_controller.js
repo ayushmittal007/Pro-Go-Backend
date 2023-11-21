@@ -30,6 +30,8 @@ const addCard = async (req, res, next) => {
             listId : listId,
             userId : req.user._id,
             daysAlloted : req.body.daysAlloted,
+            description : req.body.description,
+            color : req.body.color
         })
         const respData = await card.save()
         res.status(201).json({

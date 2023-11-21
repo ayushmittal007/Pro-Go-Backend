@@ -16,7 +16,14 @@ const addList = async (req, res, next) => {
             return next(new ErrorHandler(400, 'List with this name already exists!'));
         }
 
-        const list = new List(req.body)
+        const list = new List(
+            {
+                name : req.body.name,
+                boardId : boardId,
+                userId : req.user._id,
+                color : req.body.color
+            }
+        )
         const respData = await list.save()
         res.status(201).json({
             success : true,

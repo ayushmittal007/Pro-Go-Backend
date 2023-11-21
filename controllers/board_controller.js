@@ -35,6 +35,8 @@ const addBoard = async (req, res, next) => {
       name: boardName,
       userId: userId,
       templateLink: req.body.templateLink,
+      templateName: req.body.templateName,
+      color: req.body.color,
     });
 
     const respData = await board.save();
@@ -223,6 +225,27 @@ const addMember = async (req, res, next) => {
   }
 };
 
+const getAllMemberInTheBoard = async (req, res, next) => {
+  try {
+    const board = await Board.findOne({ _id: req.params.id });
+    if (!board) {
+      return next(new ErrorHandler(400, "Board not found!"));
+    }
+    if (!(board.members.includes(req.user._id) ) && req.user._id.toString() !== board.userId._id.toString()) {
+      return next(
+        new ErrorHandler(400, "You are not the member of this board!")
+      );
+    }
+    const members = board.members;
+    res.json({
+      success: true,
+      data: { members },
+    });
+  } catch (e) {
+    next(e);
+  }
+}
+
 module.exports = {
   getAll,
   addBoard,
@@ -232,4 +255,5 @@ module.exports = {
   getCards,
   deleteBoard,
   addMember,
+  getAllMemberInTheBoard
 };

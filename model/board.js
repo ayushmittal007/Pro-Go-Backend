@@ -18,6 +18,14 @@ const boardSchema = new Mongoose.Schema({
         type : String,
         default : ""
     },
+    templateName : {
+        type : String,
+        default : ""
+    },
+    color : {
+        type : String,
+        default : "#0079bf"
+    },
 },
 {
     timestamps: true
