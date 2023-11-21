@@ -180,7 +180,7 @@ const deleteBoard = async (req, res, next) => {
     });
     res.status(201).json({
       success: true,
-      message: "Board Deleted Successfully",
+      message: "Board and all the Lists inside it and all the Cards inside the Lists Deleted Successfully",
     });
   } catch (error) {
     next(error);

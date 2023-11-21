@@ -71,9 +71,12 @@ const updateList =  async (req, res, next) => {
         const _id = req.params.id
         const list = await List.findById(_id)
         if (!list){
-            return next(new ErrorHandler(400, 'Card not found!'));
+            return next(new ErrorHandler(400, 'List not found!'));
         }
-        if(req.user._id.toString() != list.userId.toString()){
+        const boardId = list.boardId;
+        const board = await Board.findOne({ _id: boardId })
+        const userId = board.userId;
+        if(req.user._id.toString() != userId.toString()){
             return next(new ErrorHandler(400, 'You are not allowed to update this list !'));
         }
         const respData = await List.findByIdAndUpdate(_id, req.body, {new : true})
@@ -103,7 +106,7 @@ const deleteList =  async (req, res, next) => {
             await Card.deleteOne({ _id: card._id })))
         res.status(201).json({
             success : true,
-            message : "List deleted successfully"
+            message : "List and all the Cards inside it deleted successfully"
         })
     } catch (error) {
         next(error)
