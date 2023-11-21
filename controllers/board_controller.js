@@ -85,7 +85,7 @@ const updateBoardById = async (req, res, next) => {
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
-    if (req.user._id.toString() != list.userId.toString()) {
+    if (req.user._id.toString() != board.userId.toString()) {
       return next(
         new ErrorHandler(400, "You are not allowed to update this Board !")
       );
