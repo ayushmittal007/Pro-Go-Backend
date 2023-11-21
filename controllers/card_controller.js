@@ -19,7 +19,8 @@ const addCard = async (req, res, next) => {
             return next(new ErrorHandler(400, 'List not found!'));
         }
         const cardName = req.body.name;
-        const existing = Card.findOne({ name: cardName, listId: listId , boardId : boardId });
+        const existing = await Card.findOne({ name: cardName, listId: listId , boardId : boardId });
+        console.log(existing)
         if(existing){
             return next(new ErrorHandler(400, 'Card with this name already exists!'));
         }
