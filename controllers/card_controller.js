@@ -1,11 +1,10 @@
 const {User , Board , List , Card} = require("../model");
 const {ErrorHandler} = require("../middlewares/errorHandling");
-const {idSchema , addCardSchema} = require("../utils/joi_validations");
+const {idSchema } = require("../utils/joi_validations");
 const moment = require('moment');
 
 const addCard = async (req, res, next) => {
     try {
-        const input = await addCardSchema.validateAsync(req.body);
         const boardId = req.body.boardId
         const board = await Board.findOne({ _id: boardId, userId: req.user._id })
         if (!board){
@@ -24,7 +23,7 @@ const addCard = async (req, res, next) => {
             boardId : boardId,
             listId : listId,
             userId : req.user._id,
-            daysAlloted : req.body.daysAlloted
+            daysAlloted : req.body.daysAlloted,
         })
         const respData = await card.save()
         res.status(201).json({
@@ -52,6 +51,51 @@ const getCardById =  async (req, res, next) => {
         })
     } catch (error) {
         next(error)
+    }
+}
+
+const updateCard =  async (req, res, next) => {
+    try{
+        const input = await idSchema.validateAsync(req.params);
+        const _id = req.params.id
+        const card = await Card.findById(_id)
+        if (!card){
+            return next(new ErrorHandler(400, 'Card not found!'));
+        }
+        if(req.user._id != card.userId){
+            return next(new ErrorHandler(400, 'You are not allowed to update this card!'));
+        }
+        const respData = await Card.findByIdAndUpdate(_id, req.body, {new : true})
+        res.status(201).json({
+            status : true,
+            message : "Card Updated Successfully",
+            data : {respData}
+        })        
+    }catch(err){
+        next(err)
+    }
+}
+
+const addDataToCard = async (req, res, next) => {
+    try{
+        const dataToAdd = req.body.data;
+        const _id = req.params.id;
+        const card = await Card.findById(_id)
+        if (!card){
+            return next(new ErrorHandler(400, 'Card not found!'));
+        }
+        if(req.user._id != card.userId){
+            return next(new ErrorHandler(400, 'You are not allowed to add to this card!'));
+        }
+        card.data.push(dataToAdd)
+        const respData = await card.save()
+        res.status(201).json({
+            status : true,
+            message : "Data Added Successfully",
+            data : {respData}
+        })
+    }catch(err){
+        next(err)
     }
 }
 
@@ -109,5 +153,7 @@ module.exports = {
     getCardById,
     addCard,
     deleteCard,
+    updateCard,
+    addDataToCard,
     checkDueDate,
 }

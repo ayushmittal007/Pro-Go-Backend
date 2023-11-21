@@ -32,13 +32,6 @@ const name_id_Schema = Joi.object({
   boardId: Joi.string().required(),
 });
 
-const addCardSchema = Joi.object({
-  name : Joi.string().required(),
-  boardId: Joi.string().required(),
-  listId: Joi.string().required(),
-  daysAlloted : Joi.number(),
-});
-
 module.exports = {
   authSchema,
   newSchema,

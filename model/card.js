@@ -23,6 +23,14 @@ const cardSchema = new Mongoose.Schema({
     daysAlloted : {
         type: Number,
         default: 1000000,
+    },
+    description : {
+        type: String,
+        default: "",
+    },
+    data : {
+        type : Array,
+        default : []
     }
 },
 {
