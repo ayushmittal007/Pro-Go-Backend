@@ -26,7 +26,8 @@ const addBoard = async (req, res, next) => {
   try {
     const boardName = req.body.name;
     const userId = req.user._id;
-    if (Board.findOne({ name: boardName, userId: userId })) {
+    const existing = await Board.findOne({ name: boardName, userId: userId });
+    if (existing) {
       return next(
         new ErrorHandler(400, "Board with this name already exists!")
       );

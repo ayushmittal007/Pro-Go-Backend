@@ -105,24 +105,9 @@ const uploadProfilePhoto = async (req, res, next) => {
     }
   }
 
-  // const inviteWorkSpaceMember = async (req, res, next) => {
-  //   try{
-  //     const sender = await user.findOne({_id : req.user.id});
-  //     inviteMail(email,req.user.email);
-  //     res.json({
-  //       success : true,
-  //       message : "Invitation sent successfully"
-  //     });
-  //   }
-  //   catch(e){
-  //     next(e);
-  //   }
-  // }
-
 module.exports = {
   uploadProfilePhoto,
   getPhotoUrl,
   addUserDetails,
-  getUserDetails,
-  // inviteWorkSpaceMember 
+  getUserDetails
 }
