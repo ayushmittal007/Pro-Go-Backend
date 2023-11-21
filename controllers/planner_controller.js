@@ -5,7 +5,7 @@ const createPlanner = async (req, res, next) => {
         const {date, taskList, goals, note } = req.body;
         const newPlanner = new Planner({date, taskList, goals, note });
         const savedPlanner = await newPlanner.save();
-        res.status(201).json({ success: true, data: savedPlanner });
+        res.status(201).json({ success: true,message : "Creation Successfull" , data: savedPlanner });
     } catch (error) {
         next(error);
     }
@@ -36,7 +36,7 @@ const updatePlannerById = async (req, res, next) => {
         if (!updatedPlanner) {
             return res.status(404).json({ success: false, message: 'Planner not found' });
         }
-        res.json({ success: true, data: updatedPlanner });
+        res.json({ success: true, message : "Updation Successfull"  , data: updatedPlanner });
     } catch (error) {
         next(error);
     }
@@ -49,7 +49,7 @@ const deletePlannerById = async (req, res, next) => {
         if (!deletedPlanner) {
             return res.status(404).json({ success: false, message: 'Planner not found' });
         }
-        res.json({ success: true, data: deletedPlanner });
+        res.json({ success: true, message : "Deletion Successfull" });
     } catch (error) {
         next(error);
     }

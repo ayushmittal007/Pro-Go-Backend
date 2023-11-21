@@ -10,7 +10,12 @@ const addList = async (req, res, next) => {
         if (!board){
             return next(new ErrorHandler(400, 'Board not found!'));
         }
-        
+        const listName = req.body.name;
+        const exist = await List.findOne({ name: listName, boardId: boardId });
+        if(exist){
+            return next(new ErrorHandler(400, 'List with this name already exists!'));
+        }
+
         const list = new List(req.body)
         const respData = await list.save()
         res.status(201).json({
@@ -61,6 +66,27 @@ const getCardsOfList = async (req, res, next) => {
     }
 }
 
+const updateList =  async (req, res, next) => {
+    try{
+        const _id = req.params.id
+        const list = await List.findById(_id)
+        if (!list){
+            return next(new ErrorHandler(400, 'Card not found!'));
+        }
+        if(req.user._id.toString() != list.userId.toString()){
+            return next(new ErrorHandler(400, 'You are not allowed to update this list !'));
+        }
+        const respData = await List.findByIdAndUpdate(_id, req.body, {new : true})
+        res.status(201).json({
+            status : true,
+            message : "List Updated Successfully",
+            data : {respData}
+        })      
+    }catch(error){
+        next(error)
+    }
+}
+
 const deleteList =  async (req, res, next) => {
     try {
         const input = await idSchema.validateAsync(req.params);
@@ -68,6 +94,9 @@ const deleteList =  async (req, res, next) => {
         const list = await List.findByIdAndDelete(_id)
         if (!list){
             return next(new ErrorHandler(400, 'List not found!'));
+        }
+        if(req.user._id.toString() != list.userId.toString()){
+            return next(new ErrorHandler(400, 'You are not allowed to delete this list !'));
         }
         const cards = await Card.find({ listid: _id })
         cards.forEach(async (card) => (
@@ -85,5 +114,6 @@ module.exports = {
     addList,
     getListById,
     getCardsOfList,
+    updateList,
     deleteList
 }

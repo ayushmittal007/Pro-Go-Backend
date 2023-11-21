@@ -24,7 +24,19 @@ const getAll = async (req, res, next) => {
 
 const addBoard = async (req, res, next) => {
   try {
-    const board = new Board({ name: req.body.name, userId: req.user._id , templateLink : req.body.templateLink});
+    const boardName = req.body.name;
+    const userId = req.user._id;
+    if (Board.findOne({ name: boardName, userId: userId })) {
+      return next(
+        new ErrorHandler(400, "Board with this name already exists!")
+      );
+    }
+    const board = new Board({
+      name: boardName,
+      userId: userId,
+      templateLink: req.body.templateLink,
+    });
+
     const respData = await board.save();
     req.user.boardsOwned.push(board._id);
     await req.user.save();
@@ -48,13 +60,41 @@ const getBoardById = async (req, res, next) => {
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
-    if( (!(board.members.includes(req.user._id)))  && req.user._id.toString() !== board.userId._id.toString()){
-        return next(new ErrorHandler(400, "You are not the member of this board!"));
+    if (
+      !board.members.includes(req.user._id) &&
+      req.user._id.toString() !== board.userId._id.toString()
+    ) {
+      return next(
+        new ErrorHandler(400, "You are not the member of this board!")
+      );
     }
 
     res.status(201).json({
       success: true,
       data: { board },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateBoardById = async (req, res, next) => {
+  try {
+    const _id = req.params.id;
+    const board = await Board.findById(_id);
+    if (!board) {
+      return next(new ErrorHandler(400, "Board not found!"));
+    }
+    if (req.user._id.toString() != list.userId.toString()) {
+      return next(
+        new ErrorHandler(400, "You are not allowed to update this Board !")
+      );
+    }
+    const respData = await Board.findByIdAndUpdate(_id, req.body, { new: true });
+    res.status(201).json({
+      status: true,
+      message: "Board Updated Successfully",
+      data: { respData },
     });
   } catch (error) {
     next(error);
@@ -67,10 +107,15 @@ const getLists = async (req, res, next) => {
     const _id = req.params.id;
     const board = await Board.findOne({ _id, userId: req.user._id });
     if (!board) {
-        return next(new ErrorHandler(400, "Board not found!"));
+      return next(new ErrorHandler(400, "Board not found!"));
     }
-    if( (!(board.members.includes(req.user._id)))  && req.user._id.toString() !== board.userId._id.toString()){
-        return next(new ErrorHandler(400, "You are not the member of this board!"));
+    if (
+      !board.members.includes(req.user._id) &&
+      req.user._id.toString() !== board.userId._id.toString()
+    ) {
+      return next(
+        new ErrorHandler(400, "You are not the member of this board!")
+      );
     }
     const lists = await List.find({ boardId: _id }).populate(
       "boardId",
@@ -93,10 +138,15 @@ const getCards = async (req, res, next) => {
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
-    if( (!(board.members.includes(req.user._id)))  && req.user._id.toString() !== board.userId._id.toString()){
-        return next(new ErrorHandler(400, "You are not the member of this board!"));
+    if (
+      !board.members.includes(req.user._id) &&
+      req.user._id.toString() !== board.userId._id.toString()
+    ) {
+      return next(
+        new ErrorHandler(400, "You are not the member of this board!")
+      );
     }
-    
+
     const cards = await Card.find({ boardId: _id })
       .populate("boardId", " _id  name")
       .populate("listId", " _id  name");
@@ -118,8 +168,10 @@ const deleteBoard = async (req, res, next) => {
       return next(new ErrorHandler(400, "Board not found!"));
     }
     if (req.user._id.toString() !== board.userId._id.toString()) {
-        return next(new ErrorHandler(400, "You are not the owner of this board!"));
-    } 
+      return next(
+        new ErrorHandler(400, "You are not the owner of this board!")
+      );
+    }
     const lists = await List.find({ boardId: _id });
     lists.forEach(async (list) => {
       const cards = await Card.find({ listid: list._id });
@@ -150,12 +202,18 @@ const addMember = async (req, res, next) => {
       );
     }
     if (req.user._id.toString() !== board.userId._id.toString()) {
-        return next(new ErrorHandler(400, "You are not the owner of this board!"));
-    }    
-    console.log(board.members)
+      return next(
+        new ErrorHandler(400, "You are not the owner of this board!")
+      );
+    }
+    console.log(board.members);
     board.members.push(to_email);
     await board.save();
-    inviteMail(to_email, req.user.email ,"https://pro-go.onrender.com/api/board/" + req.params.id);
+    inviteMail(
+      to_email,
+      req.user.email,
+      "https://pro-go.onrender.com/api/board/" + req.params.id
+    );
     res.json({
       success: true,
       message: "Invitation sent successfully",
@@ -168,6 +226,7 @@ const addMember = async (req, res, next) => {
 module.exports = {
   getAll,
   addBoard,
+  updateBoardById,
   getBoardById,
   getLists,
   getCards,
