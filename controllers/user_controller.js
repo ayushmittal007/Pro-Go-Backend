@@ -105,9 +105,33 @@ const uploadProfilePhoto = async (req, res, next) => {
     }
   }
 
+  const addWorkSpaceMember = async (req, res, next) => {
+    try{
+      const User = req.user;
+      const existing = await user.findOne({email : req.body.email});
+      if(existing == null){
+        res.json({
+          success: true,
+          message : "No user found"
+        });
+      }
+      else {
+        User.usersWorkSpcaeMember.push(req.body.email);
+        await User.save();
+        res.json({
+          success: true,
+          message : "User added successfully"
+        });
+      }
+    }catch(err){
+      next(err);
+    }
+  }
+
 module.exports = {
   uploadProfilePhoto,
   getPhotoUrl,
   addUserDetails,
-  getUserDetails
+  getUserDetails,
+  addWorkSpaceMember
 }

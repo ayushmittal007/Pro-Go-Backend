@@ -56,16 +56,18 @@ const getBoardById = async (req, res, next) => {
   try {
     const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id;
-    const board = await Board.findOne({ _id, userId: req.user._id }).populate(
+    const board = await Board.findOne({ _id }).populate(
       "userId",
-      "_id username email"
+      "_id username email usersWorkSpcaeMember"
     );
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
+
     if (
       !board.members.includes(req.user._id) &&
-      req.user._id.toString() !== board.userId._id.toString()
+      req.user._id.toString() !== board.userId._id.toString() &&
+      !board.userId.usersWorkSpcaeMember.includes(req.user.email)
     ) {
       return next(
         new ErrorHandler(400, "You are not the member of this board!")
@@ -84,16 +86,24 @@ const getBoardById = async (req, res, next) => {
 const updateBoardById = async (req, res, next) => {
   try {
     const _id = req.params.id;
-    const board = await Board.findById(_id);
+    const board = await Board.findOne({ _id }).populate(
+      "userId",
+      "_id username email usersWorkSpcaeMember"
+    );
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
-    if (req.user._id.toString() != board.userId.toString()) {
+    if (
+      req.user._id.toString() !== board.userId.toString() &&
+      !board.userId.usersWorkSpcaeMember.includes(req.user.email)
+    ) {
       return next(
         new ErrorHandler(400, "You are not allowed to update this Board !")
       );
     }
-    const respData = await Board.findByIdAndUpdate(_id, req.body, { new: true });
+    const respData = await Board.findByIdAndUpdate(_id, req.body, {
+      new: true,
+    });
     res.status(201).json({
       status: true,
       message: "Board Updated Successfully",
@@ -108,13 +118,17 @@ const getLists = async (req, res, next) => {
   try {
     const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id;
-    const board = await Board.findOne({ _id, userId: req.user._id });
+    const board = await Board.findOne({ _id }).populate(
+      "userId",
+      "_id username email usersWorkSpcaeMember"
+    );
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
     if (
       !board.members.includes(req.user._id) &&
-      req.user._id.toString() !== board.userId._id.toString()
+      req.user._id.toString() !== board.userId._id.toString() &&
+      !board.userId.usersWorkSpcaeMember.includes(req.user.email)
     ) {
       return next(
         new ErrorHandler(400, "You are not the member of this board!")
@@ -137,13 +151,17 @@ const getCards = async (req, res, next) => {
   try {
     const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id;
-    const board = await Board.findOne({ _id, userId: req.user._id });
+    const board = await Board.findOne({ _id }).populate(
+      "userId",
+      "_id username email usersWorkSpcaeMember"
+    );
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
     if (
       !board.members.includes(req.user._id) &&
-      req.user._id.toString() !== board.userId._id.toString()
+      req.user._id.toString() !== board.userId._id.toString() &&
+      !board.userId.usersWorkSpcaeMember.includes(req.user.email)
     ) {
       return next(
         new ErrorHandler(400, "You are not the member of this board!")
@@ -166,13 +184,19 @@ const deleteBoard = async (req, res, next) => {
   try {
     const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id;
-    const board = await Board.findOneAndDelete({ _id, userId: req.user._id });
+    const board = await Board.findOne({ _id }).populate(
+      "userId",
+      "_id username email usersWorkSpcaeMember"
+    );
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
-    if (req.user._id.toString() !== board.userId._id.toString()) {
+    if (
+      req.user._id.toString() !== board.userId.toString() &&
+      !board.userId.usersWorkSpcaeMember.includes(req.user.email)
+    ) {
       return next(
-        new ErrorHandler(400, "You are not the owner of this board!")
+        new ErrorHandler(400, "You are not allowed to delete this Board !")
       );
     }
     const lists = await List.find({ boardId: _id });
@@ -183,7 +207,8 @@ const deleteBoard = async (req, res, next) => {
     });
     res.status(201).json({
       success: true,
-      message: "Board and all the Lists inside it and all the Cards inside the Lists Deleted Successfully",
+      message:
+        "Board and all the Lists inside it and all the Cards inside the Lists Deleted Successfully",
     });
   } catch (error) {
     next(error);
@@ -204,9 +229,15 @@ const addMember = async (req, res, next) => {
         new ErrorHandler(400, "User already a member of this board!")
       );
     }
-    if (req.user._id.toString() !== board.userId._id.toString()) {
+    if (
+      req.user._id.toString() !== board.userId.toString() &&
+      !board.userId.usersWorkSpcaeMember.includes(req.user.email)
+    ) {
       return next(
-        new ErrorHandler(400, "You are not the owner of this board!")
+        new ErrorHandler(
+          400,
+          "You are not allowed to add anyoe to this Board !"
+        )
       );
     }
     console.log(board.members);
@@ -232,7 +263,11 @@ const getAllMemberInTheBoard = async (req, res, next) => {
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
-    if (!(board.members.includes(req.user._id) ) && req.user._id.toString() !== board.userId._id.toString()) {
+    if (
+      !board.members.includes(req.user._id) &&
+      req.user._id.toString() !== board.userId._id.toString() &&
+      !board.userId.usersWorkSpcaeMember.includes(req.user.email)
+    ) {
       return next(
         new ErrorHandler(400, "You are not the member of this board!")
       );
@@ -245,7 +280,7 @@ const getAllMemberInTheBoard = async (req, res, next) => {
   } catch (e) {
     next(e);
   }
-}
+};
 
 module.exports = {
   getAll,
@@ -256,5 +291,5 @@ module.exports = {
   getCards,
   deleteBoard,
   addMember,
-  getAllMemberInTheBoard
+  getAllMemberInTheBoard,
 };
