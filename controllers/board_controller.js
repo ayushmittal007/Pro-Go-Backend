@@ -57,16 +57,19 @@ const getBoardById = async (req, res, next) => {
     const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id;
     const board = await Board.findOne({ _id })
-    const userId = await User.findById(board.userId.toString());
+    const userId = await User.findById(board.userId);
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
-
+    console.log(board.members);
+    console.log(req.user);
+    console.log(req.user.email);
     if (
-      !board.members.includes(req.user._id) &&
+      !board.members.includes(req.user.email) &&
       req.user._id.toString() !== userId._id.toString() &&
       !userId.usersWorkSpcaeMember.includes(req.user.email)
     ) {
+      console.log("2");
       return next(
         new ErrorHandler(400, "You are not the member of this board!")
       );
