@@ -39,5 +39,4 @@ module.exports = {
   emailSchema,
   nameSchema,
   name_id_Schema,
-  addCardSchema,
 }
