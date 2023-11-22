@@ -6,7 +6,7 @@ const addList = async (req, res, next) => {
     try {
         const input = await name_id_Schema.validateAsync(req.body);
         const boardId = req.body.boardId
-        const board = await Board.findOne({ boardId}).populate(
+        const board = await Board.findById(boardId).populate(
             "userId",
             "_id username email usersWorkSpcaeMember"
         );
@@ -14,7 +14,7 @@ const addList = async (req, res, next) => {
             return next(new ErrorHandler(400, 'Board not found!'));
         }
         if (
-            !board.members.includes(req.user._id) &&
+            !board.members.includes(req.user.email) &&
             req.user._id.toString() !== board.userId._id.toString() &&
             !board.userId.usersWorkSpcaeMember.includes(req.user.email)
           ) {
@@ -61,7 +61,7 @@ const getListById =  async (req, res, next) => {
             return next(new ErrorHandler(400, 'Board not found!'));
         }
         if (
-            !board.members.includes(req.user._id) &&
+            !board.members.includes(req.user.email) &&
             req.user._id.toString() !== board.userId._id.toString() &&
             !board.userId.usersWorkSpcaeMember.includes(req.user.email)
           ) {
@@ -137,7 +137,7 @@ const updateList =  async (req, res, next) => {
             return next(new ErrorHandler(400, 'Board not found!'));
         }
         if (
-            !board.members.includes(req.user._id) &&
+            !board.members.includes(req.user.email) &&
             req.user._id.toString() !== board.userId._id.toString() &&
             !board.userId.usersWorkSpcaeMember.includes(req.user.email)
           ) {
@@ -173,7 +173,7 @@ const deleteList =  async (req, res, next) => {
             return next(new ErrorHandler(400, 'Board not found!'));
         }
         if (
-            !board.members.includes(req.user._id) &&
+            !board.members.includes(req.user.email) &&
             req.user._id.toString() !== board.userId._id.toString() &&
             !board.userId.usersWorkSpcaeMember.includes(req.user.email)
           ) {

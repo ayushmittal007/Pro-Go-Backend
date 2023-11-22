@@ -56,7 +56,7 @@ const getBoardById = async (req, res, next) => {
   try {
     const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id;
-    const board = await Board.findOne({ _id })
+    const board = await Board.findById(_id);
     const userId = await User.findById(board.userId);
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
@@ -94,7 +94,7 @@ const updateBoardById = async (req, res, next) => {
     }
 
     if (
-      !board.members.includes(req.user._id) &&
+      !board.members.includes(req.user.email) &&
       req.user._id.toString() !== userId._id.toString() &&
       !userId.usersWorkSpcaeMember.includes(req.user.email)
     ) {
@@ -126,7 +126,7 @@ const getLists = async (req, res, next) => {
     }
 
     if (
-      !board.members.includes(req.user._id) &&
+      !board.members.includes(req.user.email) &&
       req.user._id.toString() !== userId._id.toString() &&
       !userId.usersWorkSpcaeMember.includes(req.user.email)
     ) {
@@ -158,7 +158,7 @@ const getCards = async (req, res, next) => {
     }
 
     if (
-      !board.members.includes(req.user._id) &&
+      !board.members.includes(req.user.email) &&
       req.user._id.toString() !== userId._id.toString() &&
       !userId.usersWorkSpcaeMember.includes(req.user.email)
     ) {
@@ -190,7 +190,7 @@ const deleteBoard = async (req, res, next) => {
     }
 
     if (
-      !board.members.includes(req.user._id) &&
+      !board.members.includes(req.user.email) &&
       req.user._id.toString() !== userId._id.toString() &&
       !userId.usersWorkSpcaeMember.includes(req.user.email)
     ) {
@@ -227,7 +227,7 @@ const addMember = async (req, res, next) => {
     }
 
     if (
-      !board.members.includes(req.user._id) &&
+      !board.members.includes(req.user.email) &&
       req.user._id.toString() !== userId._id.toString() &&
       !userId.usersWorkSpcaeMember.includes(req.user.email)
     ) {
@@ -263,7 +263,7 @@ const getAllMemberInTheBoard = async (req, res, next) => {
     }
 
     if (
-      !board.members.includes(req.user._id) &&
+      !board.members.includes(req.user.email) &&
       req.user._id.toString() !== userId._id.toString() &&
       !userId.usersWorkSpcaeMember.includes(req.user.email)
     ) {
