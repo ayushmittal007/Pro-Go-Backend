@@ -86,7 +86,7 @@ const createPlannerSchema = Joi.object({
 
 const updatePlannerSchema = Joi.object({
   taskList : Joi.array().items(Joi.string()),
-  goals : Joi.array().items(Joi.string()),
+  goals : Joi.string(),
   note : Joi.string(),
 });
 
