@@ -15,6 +15,47 @@ const newSchema = Joi.object({
   .required(),
 });
 
+const boardSchema = Joi.object({
+  name : Joi.string().required().min(4).max(20),
+  templateLink : Joi.string(),
+  templateName : Joi.string(),
+  color : Joi.string().max(20),
+});
+
+const updateBoardSchema = Joi.object({
+  name : Joi.string().min(4).max(20),
+  templateLink : Joi.string(),
+  templateName : Joi.string(),
+  color : Joi.string().max(20),
+});
+
+const listSchema = Joi.object({
+  name : Joi.string().required().min(4).max(20),
+  boardId: Joi.string().required(),
+  color : Joi.string().max(20),
+});
+
+const  updateListSchema = Joi.object({
+  name : Joi.string().min(4).max(20),
+  color : Joi.string().max(20),
+});
+
+const cardSchema = Joi.object({
+  name : Joi.string().required().min(4).max(20),
+  boardId: Joi.string().required(),
+  listId: Joi.string().required(),
+  daysAlloted : Joi.number(),
+  description : Joi.string(),
+  color : Joi.string().max(20),
+});
+
+const updateCardSchema = Joi.object({
+  name : Joi.string().min(4).max(20),
+  daysAlloted : Joi.number(),
+  description : Joi.string(),
+  color : Joi.string().max(20),
+});
+
 const idSchema = Joi.object({
   id: Joi.string().required(),
 });
@@ -24,20 +65,19 @@ const emailSchema = Joi.object({
 });
 
 const nameSchema = Joi.object({
-  name : Joi.string().required(),
-});
-
-const name_id_Schema = Joi.object({
-  name : Joi.string().required(),
-  boardId: Joi.string().required(),
-  color : Joi.string(),
+  name : Joi.string().required().min(4).max(20),
 });
 
 module.exports = {
   authSchema,
   newSchema,
+  boardSchema,
+  updateBoardSchema,
+  listSchema,
+  updateListSchema,
+  cardSchema,
+  updateCardSchema,
   idSchema,
   emailSchema,
   nameSchema,
-  name_id_Schema,
 }

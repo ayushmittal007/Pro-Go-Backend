@@ -1,10 +1,11 @@
 const { User, Board, List, Card } = require("../model");
 const { ErrorHandler } = require("../middlewares/errorHandling");
-const { idSchema } = require("../utils/joi_validations");
+const { idSchema , cardSchema , updateCardSchema} = require("../utils/joi_validations");
 const moment = require("moment");
 
 const addCard = async (req, res, next) => {
   try {
+    const input = await cardSchema.validateAsync(req.body);
     const boardId = req.body.boardId;
     const board = await Board.findById(boardId).populate(
       "userId",
@@ -92,6 +93,7 @@ const getCardById = async (req, res, next) => {
 const updateCard = async (req, res, next) => {
   try {
     const input = await idSchema.validateAsync(req.params);
+    const cardInput = await updateCardSchema.validateAsync(req.body);
     const _id = req.params.id;
     const cards = await Card.findById(_id);
     // console.log(cards)
@@ -129,14 +131,13 @@ const addDataToCard = async (req, res, next) => {
     const _id = req.params.id;
     const cards = await Card.findById(_id);
     // console.log(cards)
+    if (!cards) {
+      return next(new ErrorHandler(400, "Card not found!"));
+    }
     const board = await Board.findById(cards.boardId).populate(
       "userId",
       "_id username email usersWorkSpcaeMember"
     );
-
-    if (!cards) {
-      return next(new ErrorHandler(400, "Card not found!"));
-    }
     if (
       req.user._id.toString() != board.userId._id.toString() &&
       !board.members.includes(req.user.email) &&

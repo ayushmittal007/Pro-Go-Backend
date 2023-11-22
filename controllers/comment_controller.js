@@ -1,4 +1,4 @@
-const {User , Board , List , Card, Comment} = require("../model");
+const { Card, Comment} = require("../model");
 const {ErrorHandler} = require("../middlewares/errorHandling");
 
 const addCommentToACard = async (req, res, next) => {  

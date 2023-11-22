@@ -4,6 +4,8 @@ const {
   idSchema,
   emailSchema,
   nameSchema,
+  boardSchema,
+  updateBoardSchema,
 } = require("../utils/joi_validations");
 const { inviteMail } = require("../utils/invite_mail");
 
@@ -24,6 +26,7 @@ const getAll = async (req, res, next) => {
 
 const addBoard = async (req, res, next) => {
   try {
+    const input = await boardSchema.validateAsync(req.body);
     const boardName = req.body.name;
     const userId = req.user._id;
     const existing = await Board.findOne({ name: boardName, userId: userId });
@@ -87,6 +90,7 @@ const getBoardById = async (req, res, next) => {
 const updateBoardById = async (req, res, next) => {
   try {
     const _id = req.params.id;
+    const input = await updateBoardSchema.validateAsync(req.body);
     const board = await Board.findById(_id);
     const userId = await User.findById(board.userId.toString());
     if (!board) {
@@ -255,6 +259,7 @@ const addMember = async (req, res, next) => {
 
 const getAllMemberInTheBoard = async (req, res, next) => {
   try {
+    const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id;
     const board = await Board.findById(_id);
     const userId = await User.findById(board.userId);

@@ -1,6 +1,6 @@
 const { User, Board, List, Card } = require("../model");
 const { ErrorHandler } = require("../middlewares/errorHandling");
-const { idSchema, name_id_Schema } = require("../utils/joi_validations");
+const { idSchema, listSchema , updateListSchema } = require("../utils/joi_validations");
 
 const addList = async (req, res, next) => {
   try {
@@ -121,6 +121,7 @@ const getCardsOfList = async (req, res, next) => {
 
 const updateList = async (req, res, next) => {
   try {
+    const input = await updateListSchema.validateAsync(req.body);
     const _id = req.params.id;
     const list = await List.findById(_id);
     if (!list) {
