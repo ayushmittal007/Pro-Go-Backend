@@ -87,7 +87,7 @@ const getBoardById = async (req, res, next) => {
 const updateBoardById = async (req, res, next) => {
   try {
     const _id = req.params.id;
-    const board = await Board.findOne({ _id })
+    const board = await Board.findById(_id);
     const userId = await User.findById(board.userId.toString());
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
@@ -119,8 +119,8 @@ const getLists = async (req, res, next) => {
   try {
     const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id;
-    const board = await Board.findOne({ _id })
-    const userId = await User.findById(board.userId.toString());
+    const board = await Board.findById(_id);
+    const userId = await User.findById(board.userId);
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
@@ -151,7 +151,7 @@ const getCards = async (req, res, next) => {
   try {
     const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id;
-    const board = await Board.findOne({ _id })
+    const board = await Board.findById(_id);
     const userId = await User.findById(board.userId.toString());
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
@@ -182,9 +182,9 @@ const getCards = async (req, res, next) => {
 const deleteBoard = async (req, res, next) => {
   try {
     const input = await idSchema.validateAsync(req.params);
-     const _id = req.params.id;
-    const board = await Board.findOne({ _id })
-    const userId = await User.findById(board.userId.toString());
+    const _id = req.params.id;
+    const board = await Board.findById(_id);
+    const userId = await User.findById(board.userId);
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
@@ -220,8 +220,8 @@ const addMember = async (req, res, next) => {
     const body = await emailSchema.validateAsync(req.body);
     const to_email = body.email;
     const _id = req.params.id;
-    const board = await Board.findOne({ _id })
-    const userId = await User.findById(board.userId.toString());
+    const board = await Board.findById(_id);
+    const userId = await User.findById(board.userId);
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
@@ -256,8 +256,8 @@ const addMember = async (req, res, next) => {
 const getAllMemberInTheBoard = async (req, res, next) => {
   try {
     const _id = req.params.id;
-    const board = await Board.findOne({ _id })
-    const userId = await User.findById(board.userId.toString());
+    const board = await Board.findById(_id);
+    const userId = await User.findById(board.userId);
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }

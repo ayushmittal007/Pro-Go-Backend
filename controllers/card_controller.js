@@ -62,7 +62,7 @@ const getCardById = async (req, res, next) => {
     const _id = req.params.id;
     const cards = await Card.findById(_id);
     // console.log(cards)
-    const board = await Board.findOne({ _id: cards.boardId }).populate(
+    const board = await Board.findById(cards.boardId).populate(
       "userId",
       "_id username email usersWorkSpcaeMember"
     );
@@ -95,7 +95,7 @@ const updateCard = async (req, res, next) => {
     const _id = req.params.id;
     const cards = await Card.findById(_id);
     // console.log(cards)
-    const board = await Board.findOne({ _id: cards.boardId }).populate(
+    const board = await Board.findById(cards.boardId).populate(
       "userId",
       "_id username email usersWorkSpcaeMember"
     );
@@ -129,7 +129,7 @@ const addDataToCard = async (req, res, next) => {
     const _id = req.params.id;
     const cards = await Card.findById(_id);
     // console.log(cards)
-    const board = await Board.findOne({ _id: cards.boardId }).populate(
+    const board = await Board.findById(cards.boardId).populate(
       "userId",
       "_id username email usersWorkSpcaeMember"
     );
@@ -165,7 +165,7 @@ const deleteCard = async (req, res, next) => {
     const _id = req.params.id;
     const cards = await Card.findById(_id);
     // console.log(cards)
-    const board = await Board.findOne({ _id: cards.boardId }).populate(
+    const board = await Board.findById(cards.boardId).populate(
       "userId",
       "_id username email usersWorkSpcaeMember"
     );
@@ -199,7 +199,7 @@ const checkDueDate = async (req, res, next) => {
     const _id = req.params.id;
     const cards = await Card.findById(_id);
     // console.log(cards)
-    const board = await Board.findOne({ _id: cards.boardId }).populate(
+    const board = await Board.findById(cards.boardId).populate(
       "userId",
       "_id username email usersWorkSpcaeMember"
     );

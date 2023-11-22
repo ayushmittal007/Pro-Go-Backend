@@ -14,7 +14,9 @@ const createPlanner = async (req, res, next) => {
 const getPlannerByDate = async (req, res, next) => {
     try {
         const {date} = req.body;
+        console.log(date);
         const planner = await Planner.findOne({date});
+        console.log(planner);
         if (!planner) {
             return res.status(404).json({ success: false, message: 'Planner not found' });
         }
