@@ -13,7 +13,7 @@ const createPlanner = async (req, res, next) => {
 
 const getPlannerByDate = async (req, res, next) => {
     try {
-        const date = req.body.date;
+        const date = req.params.date;
         console.log(date);
         const planner = await Planner.findOne({ date : date});
         console.log(planner);
