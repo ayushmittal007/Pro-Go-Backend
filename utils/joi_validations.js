@@ -80,7 +80,7 @@ const nameSchema = Joi.object({
 const createPlannerSchema = Joi.object({
   date : Joi.string().required(),
   taskList : Joi.array().items(Joi.string()),
-  goals : Joi.array().items(Joi.string()),
+  goals : Joi.string(),
   note : Joi.string(),
 });
 
