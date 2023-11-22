@@ -4,7 +4,7 @@ const { idSchema, listSchema , updateListSchema } = require("../utils/joi_valida
 
 const addList = async (req, res, next) => {
   try {
-    const input = await name_id_Schema.validateAsync(req.body);
+    const input = await listSchema.validateAsync(req.body);
     const boardId = req.body.boardId;
     const board = await Board.findById(boardId).populate(
       "userId",

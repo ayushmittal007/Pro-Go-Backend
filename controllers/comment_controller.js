@@ -1,8 +1,10 @@
 const { Card, Comment} = require("../model");
+const { commentSchema , updateCommentSchema } = require("../utils/joi_validations");  
 const {ErrorHandler} = require("../middlewares/errorHandling");
 
 const addCommentToACard = async (req, res, next) => {  
     try{
+        const input = await commentSchema.validateAsync(req.body);
         const userId = req.user._id;
         const cardId = req.body.cardId;
         const comment = req.body.text;
@@ -38,6 +40,7 @@ const getAllComments = async (req, res, next) => {
 
 const updateComment = async (req, res, next) => {
     try{
+        const input = await updateCommentSchema.validateAsync(req.body);
         const commentId = req.params.id;
         const comment = await Comment.findById(commentId);
         if(!comment){

@@ -56,6 +56,15 @@ const updateCardSchema = Joi.object({
   color : Joi.string().max(20),
 });
 
+const commentSchema = Joi.object({
+  text : Joi.string().required().min(4).max(200),
+  cardId: Joi.string().required(),
+});
+
+const updateCommentSchema = Joi.object({
+  text : Joi.string().min(4).max(200),
+});
+
 const idSchema = Joi.object({
   id: Joi.string().required(),
 });
@@ -68,6 +77,31 @@ const nameSchema = Joi.object({
   name : Joi.string().required().min(4).max(20),
 });
 
+const createPlannerSchema = Joi.object({
+  date : Joi.string().required(),
+  taskList : Joi.array().items(Joi.string()),
+  goals : Joi.array().items(Joi.string()),
+  note : Joi.string(),
+});
+
+const updatePlannerSchema = Joi.object({
+  taskList : Joi.array().items(Joi.string()),
+  goals : Joi.array().items(Joi.string()),
+  note : Joi.string(),
+});
+
+const recentlyViewedSchema = Joi.object({
+  name : Joi.string().required().min(4).max(20),
+  link: Joi.string().required(),
+  color : Joi.string().max(20),
+});
+
+const recentlyWorkedSchema = Joi.object({
+  name : Joi.string().required().min(4).max(20),
+  link: Joi.string().required(),
+  color : Joi.string().max(20),
+});
+
 module.exports = {
   authSchema,
   newSchema,
@@ -77,7 +111,13 @@ module.exports = {
   updateListSchema,
   cardSchema,
   updateCardSchema,
+  commentSchema,
+  updateCommentSchema,
   idSchema,
   emailSchema,
   nameSchema,
+  createPlannerSchema,
+  updatePlannerSchema,
+  recentlyViewedSchema,
+  recentlyWorkedSchema, 
 }

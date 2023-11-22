@@ -1,5 +1,5 @@
 const user = require("../model/user");
-const { emailSchema } = require("../utils/joi_validations");
+const { emailSchema , recentlyViewedSchema , recentlyWorkedSchema } = require("../utils/joi_validations");
 const {inviteMail} = require("../utils/invite_mail");
 
 const uploadProfilePhoto = async (req, res, next) => {
@@ -131,8 +131,8 @@ const uploadProfilePhoto = async (req, res, next) => {
 const addRecentlyViewed = async (req, res, next) => { 
   try{
     const User = req.user;
-    const addition = req.body;
-    User.recentlyViewed.push(addition);
+    const input = await recentlyViewedSchema.validateAsync(req.body);
+    User.recentlyViewed.push(input);
     await User.save();
     res.json({
       success: true,
@@ -146,8 +146,8 @@ const addRecentlyViewed = async (req, res, next) => {
 const addRecentlyWorked = async (req, res, next) => { 
   try{
     const User = req.user;
-    const addition = req.body;
-    User.recentlyWorked.push(addition);
+    const input = await recentlyWorkedSchema.validateAsync(req.body);
+    User.recentlyWorked.push(input);
     await User.save();
     res.json({
       success: true,

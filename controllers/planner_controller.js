@@ -1,7 +1,9 @@
 const Planner = require('../model/planner'); 
+const { createPlannerSchema , updatePlannerSchema } = require('../utils/joi_validations');
 
 const createPlanner = async (req, res, next) => {
     try {
+        const input = await createPlannerSchema.validateAsync(req.body);
         const {date, taskList, goals, note } = req.body;
         const newPlanner = new Planner({date, taskList, goals, note });
         const savedPlanner = await newPlanner.save();
@@ -28,6 +30,7 @@ const getPlannerByDate = async (req, res, next) => {
 
 const updatePlannerById = async (req, res, next) => {
     try {
+        const input = await updatePlannerSchema.validateAsync(req.body);
         const { taskList, goals, note } = req.body;
         const id=req.params.id;
         const updatedPlanner = await Planner.findByIdAndUpdate(
