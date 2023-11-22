@@ -47,6 +47,9 @@ const getListById = async (req, res, next) => {
   try {
     const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id;
+    if (!list) {
+        return next(new ErrorHandler(400, "List not found!"));
+    }
     const list = await List.findById(_id);
     const board = await Board.findById(list.boardId).populate(
       "userId",
@@ -61,9 +64,6 @@ const getListById = async (req, res, next) => {
       !board.userId.usersWorkSpcaeMember.includes(req.user.email)
     ) {
       return next(new ErrorHandler(400, "You can not get this list!"));
-    }
-    if (!list) {
-      return next(new ErrorHandler(400, "List not found!"));
     }
     res.status(201).json({
       success: true,
@@ -83,10 +83,8 @@ const getCardsOfList = async (req, res, next) => {
       return next(new ErrorHandler(400, "List not found!"));
     }
 
-    const cards = await Card.find({ listID: _id }).populate(
-      "listId",
-      "_id , name"
-    );
+    const cards = await Card.find({ listId : _id })
+    console.log(cards)
     if (!cards) {
       return next(new ErrorHandler(400, "Card not found!"));
     }
@@ -100,7 +98,7 @@ const getCardsOfList = async (req, res, next) => {
       return next(new ErrorHandler(400, "Board not found!"));
     }
     if (
-      !board.members.includes(req.user._id) &&
+      !board.members.includes(req.user.email) &&
       req.user._id.toString() !== board.userId._id.toString() &&
       !board.userId.usersWorkSpcaeMember.includes(req.user.email)
     ) {
@@ -157,7 +155,7 @@ const deleteList = async (req, res, next) => {
   try {
     const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id;
-    const list = await List.findByIdAndDelete(_id);
+    const list = await List.findById(_id);
     if (!list) {
       return next(new ErrorHandler(400, "List not found!"));
     }
@@ -174,10 +172,11 @@ const deleteList = async (req, res, next) => {
       req.user._id.toString() !== board.userId._id.toString() &&
       !board.userId.usersWorkSpcaeMember.includes(req.user.email)
     ) {
-      return next(new ErrorHandler(400, "You can not get this list!"));
+      return next(new ErrorHandler(400, "You can not delete this list!"));
     }
-    const cards = await Card.find({ listid: _id });
+    const cards = await Card.find({ listId: _id });
     cards.forEach(async (card) => await Card.deleteOne({ _id: card._id }));
+    await List.findByIdAndDelete(_id);
     res.status(201).json({
       success: true,
       message: "List and all the Cards inside it deleted successfully",

@@ -21,7 +21,7 @@ const getPlannerByDate = async (req, res, next) => {
             return res.status(404).json({ success: false, message: 'Planner not found' });
         }
         res.json({ success: true, data: planner });
-    } catch (error) {
+    } catch (error) {   
         next(error);
     }
 };
