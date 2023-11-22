@@ -69,6 +69,14 @@ const UserSchema = new Mongoose.Schema({
   usersWorkSpcaeMember : {
     type : Array,
     default : []
+  },
+  recentlyViewed : {
+    type: Array,
+    default: [],
+  },
+  recentlyWorked : {
+    type: Array,
+    default: [],
   }
 })
 

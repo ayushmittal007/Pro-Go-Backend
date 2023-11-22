@@ -128,10 +128,42 @@ const uploadProfilePhoto = async (req, res, next) => {
     }
   }
 
+const addRecentlyViewed = async (req, res, next) => { 
+  try{
+    const User = req.user;
+    const addition = req.body;
+    User.recentlyViewed.push(addition);
+    await User.save();
+    res.json({
+      success: true,
+      message : "Added successfully"
+    });
+  }catch(err){
+    next(err);
+  }
+}
+
+const addRecentlyWorked = async (req, res, next) => { 
+  try{
+    const User = req.user;
+    const addition = req.body;
+    User.recentlyWorked.push(addition);
+    await User.save();
+    res.json({
+      success: true,
+      message : "Added successfully"
+    });
+  }catch(err){
+    next(err);
+  }
+}
+
 module.exports = {
   uploadProfilePhoto,
   getPhotoUrl,
   addUserDetails,
   getUserDetails,
-  addWorkSpaceMember
+  addWorkSpaceMember,
+  addRecentlyViewed,
+  addRecentlyWorked
 }
