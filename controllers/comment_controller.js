@@ -1,6 +1,5 @@
 const {User , Board , List , Card, Comment} = require("../model");
 const {ErrorHandler} = require("../middlewares/errorHandling");
-const {idSchema , addCardSchema} = require("../utils/joi_validations");
 
 const addCommentToACard = async (req, res, next) => {  
     try{
