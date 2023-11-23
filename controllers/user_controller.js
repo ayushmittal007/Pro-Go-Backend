@@ -115,6 +115,12 @@ const uploadProfilePhoto = async (req, res, next) => {
         });
       }
       else {
+        if(User.usersWorkSpcaeMember.includes(req.body.email)){
+          res.json({
+            success: true,
+            message : "User already added"
+          });
+        }
         User.usersWorkSpcaeMember.push(req.body.email);
         await User.save();
         res.json({
