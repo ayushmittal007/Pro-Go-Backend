@@ -250,7 +250,7 @@ const addMember = async (req, res, next) => {
     inviteMail(
       to_email,
       req.user.email,
-      "https://pro-go.onrender.com/api/board/" + req.params.id
+      "https://pro-go.vercel.app/",
     );
     res.json({
       success: true,
