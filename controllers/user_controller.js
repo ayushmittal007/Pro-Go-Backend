@@ -1,6 +1,5 @@
 const user = require("../model/user");
 const { emailSchema , recentlyViewedSchema , recentlyWorkedSchema } = require("../utils/joi_validations");
-const {inviteMail} = require("../utils/invite_mail");
 
 const uploadProfilePhoto = async (req, res, next) => {
     try {
@@ -128,6 +127,18 @@ const uploadProfilePhoto = async (req, res, next) => {
     }
   }
 
+  const getAllWorkSpaceMember = async (req, res, next) => {
+    try{
+      const User = req.user;
+      res.json({
+        success: true,
+        usersWorkSpcaeMember : User.usersWorkSpcaeMember
+      });
+    }catch(err){
+      next(err);
+    }
+  }
+
 const addRecentlyViewed = async (req, res, next) => { 
   try{
     const User = req.user;
@@ -164,6 +175,7 @@ module.exports = {
   addUserDetails,
   getUserDetails,
   addWorkSpaceMember,
+  getAllWorkSpaceMember,
   addRecentlyViewed,
   addRecentlyWorked
 }

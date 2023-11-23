@@ -47,10 +47,10 @@ const getListById = async (req, res, next) => {
   try {
     const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id;
+    const list = await List.findById(_id);
     if (!list) {
         return next(new ErrorHandler(400, "List not found!"));
     }
-    const list = await List.findById(_id);
     const board = await Board.findById(list.boardId).populate(
       "userId",
       "_id username email usersWorkSpcaeMember"
