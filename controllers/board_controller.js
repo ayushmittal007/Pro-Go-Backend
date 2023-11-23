@@ -160,10 +160,14 @@ const getCards = async (req, res, next) => {
     const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id;
     const board = await Board.findById(_id);
-    const userId = await User.findById(board.userId.toString());
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
+    const userId = await User.findById(board.userId.toString());
+    if(!userId){
+      return next(new ErrorHandler(400, "User not found!"));
+    }
+    
 
     if (
       !board.members.includes(req.user.email) &&
