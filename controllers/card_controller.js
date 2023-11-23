@@ -63,14 +63,17 @@ const getCardById = async (req, res, next) => {
     const _id = req.params.id;
     const cards = await Card.findById(_id);
     // console.log(cards)
+    if (!cards) {
+      return next(new ErrorHandler(400, "Card not found!"));
+    }
     const board = await Board.findById(cards.boardId).populate(
       "userId",
       "_id username email usersWorkSpcaeMember"
     );
-
-    if (!cards) {
-      return next(new ErrorHandler(400, "Card not found!"));
+    if(!board){
+      return next(new ErrorHandler(400, "Board not found!"));
     }
+    
     if (
       req.user._id.toString() != board.userId._id.toString() &&
       !board.members.includes(req.user.email) &&
@@ -97,14 +100,18 @@ const updateCard = async (req, res, next) => {
     const _id = req.params.id;
     const cards = await Card.findById(_id);
     // console.log(cards)
+    if (!cards) {
+      return next(new ErrorHandler(400, "Card not found!"));
+    }
+
     const board = await Board.findById(cards.boardId).populate(
       "userId",
       "_id username email usersWorkSpcaeMember"
     );
-
-    if (!cards) {
-      return next(new ErrorHandler(400, "Card not found!"));
+    if(!board){
+      return next(new ErrorHandler(400, "Board not found!"));
     }
+   
     if (
       req.user._id.toString() != board.userId._id.toString() &&
       !board.members.includes(req.user.email) &&
@@ -138,6 +145,10 @@ const addDataToCard = async (req, res, next) => {
       "userId",
       "_id username email usersWorkSpcaeMember"
     );
+    if(!board){
+      return next(new ErrorHandler(400, "Board not found!"));
+    }
+
     if (
       req.user._id.toString() != board.userId._id.toString() &&
       !board.members.includes(req.user.email) &&
@@ -166,13 +177,16 @@ const deleteCard = async (req, res, next) => {
     const _id = req.params.id;
     const cards = await Card.findById(_id);
     // console.log(cards)
+    if (!cards) {
+      return next(new ErrorHandler(400, "Card not found!"));
+    }
+
     const board = await Board.findById(cards.boardId).populate(
       "userId",
       "_id username email usersWorkSpcaeMember"
     );
-
-    if (!cards) {
-      return next(new ErrorHandler(400, "Card not found!"));
+    if(!board){
+      return next(new ErrorHandler(400, "Board not found!"));
     }
     if (
       req.user._id.toString() != board.userId._id.toString() &&
@@ -200,14 +214,17 @@ const checkDueDate = async (req, res, next) => {
     const _id = req.params.id;
     const cards = await Card.findById(_id);
     // console.log(cards)
+    if (!cards) {
+      return next(new ErrorHandler(400, "Card not found!"));
+    }
     const board = await Board.findById(cards.boardId).populate(
       "userId",
       "_id username email usersWorkSpcaeMember"
     );
-
-    if (!cards) {
-      return next(new ErrorHandler(400, "Card not found!"));
+    if(!board){
+      return next(new ErrorHandler(400, "Board not found!"));
     }
+
     if (
       req.user._id.toString() != board.userId._id.toString() &&
       !board.members.includes(req.user.email) &&

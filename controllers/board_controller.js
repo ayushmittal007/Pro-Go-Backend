@@ -60,13 +60,13 @@ const getBoardById = async (req, res, next) => {
     const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id;
     const board = await Board.findById(_id);
-    const userId = await User.findById(board.userId);
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
-    console.log(board.members);
-    console.log(req.user);
-    console.log(req.user.email);
+    const userId = await User.findById(board.userId);
+    if(!userId){
+      return next(new ErrorHandler(400, "User not found!"));
+    }
     if (
       !board.members.includes(req.user.email) &&
       req.user._id.toString() !== userId._id.toString() &&
@@ -92,11 +92,13 @@ const updateBoardById = async (req, res, next) => {
     const _id = req.params.id;
     const input = await updateBoardSchema.validateAsync(req.body);
     const board = await Board.findById(_id);
-    const userId = await User.findById(board.userId.toString());
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
-
+    const userId = await User.findById(board.userId);
+    if(!userId){
+      return next(new ErrorHandler(400, "User not found!"));
+    }
     if (
       !board.members.includes(req.user.email) &&
       req.user._id.toString() !== userId._id.toString() &&
@@ -124,11 +126,13 @@ const getLists = async (req, res, next) => {
     const input = await idSchema.validateAsync(req.params);
     const _id = req.params.id;
     const board = await Board.findById(_id);
-    const userId = await User.findById(board.userId);
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
-
+    const userId = await User.findById(board.userId);
+    if(!userId){
+      return next(new ErrorHandler(400, "User not found!"));
+    }
     if (
       !board.members.includes(req.user.email) &&
       req.user._id.toString() !== userId._id.toString() &&

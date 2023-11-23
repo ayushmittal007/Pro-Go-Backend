@@ -84,7 +84,6 @@ const getCardsOfList = async (req, res, next) => {
     }
 
     const cards = await Card.find({ listId : _id })
-    console.log(cards)
     if (!cards) {
       return next(new ErrorHandler(400, "Card not found!"));
     }
@@ -160,8 +159,8 @@ const deleteList = async (req, res, next) => {
     if (!list) {
       return next(new ErrorHandler(400, "List not found!"));
     }
-    const listId = await List.findById(_id);
-    const board = await Board.findById(listId.boardId).populate(
+    
+    const board = await Board.findById(list.boardId).populate(
       "userId",
       "_id username email usersWorkSpcaeMember"
     );
