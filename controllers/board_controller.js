@@ -168,7 +168,6 @@ const getCards = async (req, res, next) => {
       return next(new ErrorHandler(400, "User not found!"));
     }
     
-
     if (
       !board.members.includes(req.user.email) &&
       req.user._id.toString() !== userId._id.toString() &&

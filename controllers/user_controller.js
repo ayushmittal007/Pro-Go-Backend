@@ -167,7 +167,7 @@ const addRecentlyWorked = async (req, res, next) => {
 const search = async (req, res,next) => {
   const query = req.query.q;
   try {
-      const results1 = await Board
+      const boards = await Board
           .aggregate([
               {
                   $search: {
@@ -181,7 +181,7 @@ const search = async (req, res,next) => {
               }
           ])
           .exec();
-      const results2 = await List
+      const lists = await List
           .aggregate([
               {
                   $search: {
@@ -197,7 +197,7 @@ const search = async (req, res,next) => {
           ])
           .exec();
 
-      const results3 = await Card
+      const cards = await Card
           .aggregate([
               {
                   $search: {
@@ -211,7 +211,12 @@ const search = async (req, res,next) => {
               },
           ])
           .exec();
-      res.json({ results1, results2, results3 });
+      res.json({
+        success : true,
+        data: {
+          boards, lists, cards
+        }
+      });
   } catch (error) {
       next(error);
   }
@@ -242,5 +247,6 @@ module.exports = {
   getAllWorkSpaceMember,
   addRecentlyViewed,
   addRecentlyWorked,
-  search
+  search,
+  progress
 }

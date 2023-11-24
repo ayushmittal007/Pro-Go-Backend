@@ -140,6 +140,7 @@ const updateList = async (req, res, next) => {
     ) {
       return next(new ErrorHandler(400, "You can not update this list!"));
     }
+    
     const respData = await List.findByIdAndUpdate(_id, req.body, { new: true });
     res.status(201).json({
       status: true,
