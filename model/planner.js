@@ -14,6 +14,11 @@ const plannerSchema = new Mongoose.Schema({
     note : {
         type : String,
     },
+    UserId : {
+        type : Mongoose.Schema.Types.ObjectId,
+        ref : 'user',
+        required : true
+    }
 },
 {
     timestamps: true

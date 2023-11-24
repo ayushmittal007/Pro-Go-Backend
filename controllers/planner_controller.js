@@ -1,3 +1,4 @@
+const { ErrorHandler } = require('../middlewares/errorHandling');
 const Planner = require('../model/planner'); 
 const { createPlannerSchema , updatePlannerSchema } = require('../utils/joi_validations');
 
@@ -5,7 +6,13 @@ const createPlanner = async (req, res, next) => {
     try {
         const input = await createPlannerSchema.validateAsync(req.body);
         const {date, taskList, goals, note } = req.body;
-        const newPlanner = new Planner({date, taskList, goals, note });
+        const newPlanner = new Planner({ 
+            date, 
+            taskList, 
+            goals, 
+            note,
+            UserId : req.user._id    
+        });
         const savedPlanner = await newPlanner.save();
         res.status(201).json({ success: true,message : "Creation Successfull" , data: savedPlanner });
     } catch (error) {
@@ -22,6 +29,9 @@ const getPlannerByDate = async (req, res, next) => {
         if (!planner) {
             return res.status(404).json({ success: false, message: 'Planner not found' });
         }
+        if(req.user._id.toString() !== planner.UserId.toString()){
+            return next(new ErrorHandler(400, "You are not allowed to access this planner!"));
+        }
         res.json({ success: true, data: planner });
     } catch (error) {   
         next(error);
@@ -32,7 +42,10 @@ const updatePlannerById = async (req, res, next) => {
     try {
         const input = await updatePlannerSchema.validateAsync(req.body);
         const { taskList, goals, note } = req.body;
-        const id=req.params.id;
+        const id = req.params.id;
+        if(req.user._id.toString() !== planner.UserId.toString()){
+            return next(new ErrorHandler(400, "You are not allowed to update this planner!"));
+        }
         const updatedPlanner = await Planner.findByIdAndUpdate(
             id,
             { taskList, goals, note },
@@ -50,6 +63,13 @@ const updatePlannerById = async (req, res, next) => {
 const deletePlannerById = async (req, res, next) => {
     try {
         const id=req.params.id;
+        const planner = await Planner.findById(id);
+        if(!planner){
+            return res.status(404).json({ success: false, message: 'Planner not found' });
+        }
+        if(req.user._id.toString() !== planner.UserId.toString()){
+            return next(new ErrorHandler(400, "You are not allowed to delete this planner!"));
+        }
         const deletedPlanner = await Planner.findByIdAndDelete(id);
         if (!deletedPlanner) {
             return res.status(404).json({ success: false, message: 'Planner not found' });
