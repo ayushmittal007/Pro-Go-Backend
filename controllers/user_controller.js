@@ -1,4 +1,6 @@
-const user = require("../model/user");
+const mongoose = require('mongoose');
+const { Board, List, Card , user } = require('../model');
+const { ErrorHandler } = require('../middlewares/errorHandling');
 const { emailSchema , recentlyViewedSchema , recentlyWorkedSchema } = require("../utils/joi_validations");
 
 const uploadProfilePhoto = async (req, res, next) => {
@@ -29,10 +31,7 @@ const uploadProfilePhoto = async (req, res, next) => {
     try {
       const existing = await user.findOne({email : req.user.email});
       if(existing.photoUrl == null){
-        res.json({
-          success: true,
-          message : "No photo found"
-        });
+        return next (new ErrorHandler(400 , "No photo found"));
       }
       else {
         res.json({
@@ -50,10 +49,7 @@ const uploadProfilePhoto = async (req, res, next) => {
       const existing = await user.findOne({email : req.user.email});
       console.log(existing);
       if(existing == null){
-        res.json({
-          success: true,
-          message : "No user found"
-        });
+        return next (new ErrorHandler(400 , "No user found"));
       }else {
         if(req.body.fullName != null){
           existing.fullName = req.body.fullName;
@@ -88,10 +84,7 @@ const uploadProfilePhoto = async (req, res, next) => {
     try {
       const existing = await user.findOne({email : req.user.email});
       if(existing == null){
-        res.json({
-          success: true,
-          message : "No user found"
-        });
+       return next (new ErrorHandler(400 , "No user found"));
       }
       else {
         res.json({
@@ -109,17 +102,11 @@ const uploadProfilePhoto = async (req, res, next) => {
       const User = req.user;
       const existing = await user.findOne({email : req.body.email});
       if(existing == null){
-        res.json({
-          success: true,
-          message : "No user found"
-        });
+       return next (new ErrorHandler(400 , "No user found"));
       }
       else {
         if(User.usersWorkSpcaeMember.includes(req.body.email)){
-          res.json({
-            success: true,
-            message : "User already added"
-          });
+          return next (new ErrorHandler(400 , "User already added"));
         }
         User.usersWorkSpcaeMember.push(req.body.email);
         await User.save();
@@ -175,6 +162,59 @@ const addRecentlyWorked = async (req, res, next) => {
   }
 }
 
+const search = async (req, res,next) => {
+  const query = req.query.q;
+  try {
+      const results1 = await Board
+          .aggregate([
+              {
+                  $search: {
+                      "index": "name",
+                      "text": {
+                        "path": "name",
+                        "query": query,
+                        "fuzzy": {}
+                      }
+                  }
+              }
+          ])
+          .exec();
+      const results2 = await List
+          .aggregate([
+              {
+                  $search: {
+                      "index": "name",
+                      "text": {
+                        "path": "name",
+                        "query": query,
+                        "fuzzy": {}
+                      }
+                  }
+              },
+              
+          ])
+          .exec();
+
+      const results3 = await Card
+          .aggregate([
+              {
+                  $search: {
+                      "index": "name",
+                      "text": {
+                        "path": "name",
+                        "query": query,
+                        "fuzzy": {}
+                      }
+                  }
+              },
+          ])
+          .exec();
+      res.json({ results1, results2, results3 });
+  } catch (error) {
+      next(error);
+  }
+};
+
 module.exports = {
   uploadProfilePhoto,
   getPhotoUrl,
@@ -183,5 +223,6 @@ module.exports = {
   addWorkSpaceMember,
   getAllWorkSpaceMember,
   addRecentlyViewed,
-  addRecentlyWorked
+  addRecentlyWorked,
+  search
 }

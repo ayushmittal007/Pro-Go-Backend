@@ -276,7 +276,7 @@ const changeCurrentStatusOfCard = async (req, res, next) => {
     const respData = await card.save();
     res.status(201).json({
       status: true,
-      message: "Card marked as done Successfully",
+      message: "Card status changed successfully",
       data: { respData },
     });
   }catch(err){

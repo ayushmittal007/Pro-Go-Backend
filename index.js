@@ -36,7 +36,6 @@ app.use("/api/card" , cardRouter , errorMiddleware);
 app.use("/api/planner" , plannerRouter , errorMiddleware);
 app.use("/api/comment" , commentRouter , errorMiddleware);
 app.use("/payment" , paymentRouter);
-app.use("/api" ,searchRouter);
 
 const PORT=process.env.PORT || 5000
 

@@ -1,7 +1,7 @@
 const express = require("express");
 const userRouter = express.Router();
 const { uploadProfilePhoto , getPhotoUrl , getUserDetails, addUserDetails , addWorkSpaceMember , 
-    getAllWorkSpaceMember , addRecentlyViewed , addRecentlyWorked } = require("../controllers/user_controller");
+    getAllWorkSpaceMember , addRecentlyViewed , addRecentlyWorked , search} = require("../controllers/user_controller");
 const { uploadPhoto } = require("../middlewares/uploadPhoto"); 
 const auth = require("../middlewares/auth")
 
@@ -13,5 +13,6 @@ userRouter.post("/add-member", auth , addWorkSpaceMember);
 userRouter.get("/get-all-member", auth , getAllWorkSpaceMember);
 userRouter.post("/add-recently-viewed", auth , addRecentlyViewed);
 userRouter.post("/add-recently-worked", auth , addRecentlyWorked);
+userRouter.get("/search", auth , search);
 
 module.exports = userRouter
