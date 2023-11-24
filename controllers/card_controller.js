@@ -208,6 +208,82 @@ const deleteCard = async (req, res, next) => {
   }
 };
 
+const addColorToCard = async (req, res, next) => {
+  try{
+    const input = await idSchema.validateAsync(req.params);
+    const _id = req.params.id;
+    const card = await Card.findById(_id);
+    if(!card){
+      return next(new ErrorHandler(400, "Card not found!"));
+    }
+    const board = await Board.findById(card.boardId).populate(
+      "userId",
+      "_id username email usersWorkSpcaeMember"
+    );
+    if(!board){
+      return next(new ErrorHandler(400, "Board not found!"));
+    }
+
+    if (
+      req.user._id.toString() != board.userId._id.toString() &&
+      !board.members.includes(req.user.email) &&
+      !board.userId.usersWorkSpcaeMember.includes(req.user.email)
+    ) {
+      return next(
+        new ErrorHandler(400, "You are not allowed to change this card!")
+      );
+    }
+    const color = req.body.color;
+    card.color = color;
+    const respData = await card.save();
+    res.status(201).json({
+      status: true,
+      message: "Color Added Successfully",
+      data: { respData },
+    });
+  }catch(err){
+    next(err)
+  }
+}
+
+const changeCurrentStatusOfCard = async (req, res, next) => {
+  try{
+    const input = await idSchema.validateAsync(req.params);
+    const _id = req.params.id;
+    const card = await Card.findById(_id);
+    if(!card){
+      return next(new ErrorHandler(400, "Card not found!"));
+    }
+    const board = await Board.findById(card.boardId).populate(
+      "userId",
+      "_id username email usersWorkSpcaeMember"
+    );
+    if(!board){
+      return next(new ErrorHandler(400, "Board not found!"));
+    }
+
+    if (
+      req.user._id.toString() != board.userId._id.toString() &&
+      !board.members.includes(req.user.email) &&
+      !board.userId.usersWorkSpcaeMember.includes(req.user.email)
+    ) {
+      return next(
+        new ErrorHandler(400, "You are not allowed to change this card!")
+      );
+    }
+    const cuurStatus = card.done;
+    card.done = !cuurStatus;
+    const respData = await card.save();
+    res.status(201).json({
+      status: true,
+      message: "Card marked as done Successfully",
+      data: { respData },
+    });
+  }catch(err){
+    next(err)
+  }
+}
+
 const checkDueDate = async (req, res, next) => {
   try {
     const input = await idSchema.validateAsync(req.params);
@@ -267,5 +343,7 @@ module.exports = {
   deleteCard,
   updateCard,
   addDataToCard,
+  addColorToCard,
+  changeCurrentStatusOfCard,
   checkDueDate,
 };

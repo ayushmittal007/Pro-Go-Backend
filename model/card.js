@@ -36,6 +36,10 @@ const cardSchema = new Mongoose.Schema({
         type : String,
         default : "blue"
     },
+    done : {
+        type : Boolean,
+        default : false
+    }, 
 },
 {
     timestamps: true
