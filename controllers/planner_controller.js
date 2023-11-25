@@ -6,6 +6,10 @@ const createPlanner = async (req, res, next) => {
     try {
         const input = await createPlannerSchema.validateAsync(req.body);
         const {date, taskList, goals, note } = req.body;
+        const existing = await Planner.findOne({ date : date});
+        if(existing){
+            return next(new ErrorHandler(400, "Planner already exists!"));
+        }
         const newPlanner = new Planner({ 
             date, 
             taskList, 
@@ -38,16 +42,20 @@ const getPlannerByDate = async (req, res, next) => {
     }
 };
 
-const updatePlannerById = async (req, res, next) => {
+const updatePlannerByDate = async (req, res, next) => {
     try {
         const input = await updatePlannerSchema.validateAsync(req.body);
         const { taskList, goals, note } = req.body;
-        const id = req.params.id;
+        const date = req.params.date;
+        const planner = await Planner.findOne({ date : date});
+        if (!planner) {
+            return res.status(404).json({ success: false, message: 'Planner not found' });
+        }
         if(req.user._id.toString() !== planner.UserId.toString()){
             return next(new ErrorHandler(400, "You are not allowed to update this planner!"));
         }
-        const updatedPlanner = await Planner.findByIdAndUpdate(
-            id,
+        const updatedPlanner = await Planner.findOneAndUpdate(
+            {date : date},
             { taskList, goals, note },
             { new: true }
         );
@@ -60,17 +68,17 @@ const updatePlannerById = async (req, res, next) => {
     }
 };
 
-const deletePlannerById = async (req, res, next) => {
+const deletePlannerByDate = async (req, res, next) => {
     try {
-        const id=req.params.id;
-        const planner = await Planner.findById(id);
-        if(!planner){
+        const date = req.params.date;
+        const planner = await Planner.findOne({ date : date});
+        if (!planner) {
             return res.status(404).json({ success: false, message: 'Planner not found' });
         }
         if(req.user._id.toString() !== planner.UserId.toString()){
             return next(new ErrorHandler(400, "You are not allowed to delete this planner!"));
         }
-        const deletedPlanner = await Planner.findByIdAndDelete(id);
+        const deletedPlanner = await Planner.findOneAndDelete({ date : date});
         if (!deletedPlanner) {
             return res.status(404).json({ success: false, message: 'Planner not found' });
         }
@@ -83,6 +91,6 @@ const deletePlannerById = async (req, res, next) => {
 module.exports = {
     createPlanner,
     getPlannerByDate,
-    updatePlannerById,
-    deletePlannerById,
+    updatePlannerByDate,
+    deletePlannerByDate,
 };

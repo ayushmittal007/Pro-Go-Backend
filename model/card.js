@@ -40,6 +40,10 @@ const cardSchema = new Mongoose.Schema({
         type : Boolean,
         default : false
     }, 
+    file : {
+        type : Array,
+        default : []
+    }
 },
 {
     timestamps: true

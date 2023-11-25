@@ -5,7 +5,7 @@ const auth = require("../middlewares/auth")
 
 plannerRouter.get("/:date" , auth , plannerController.getPlannerByDate);
 plannerRouter.post("/add" , auth , plannerController.createPlanner);
-plannerRouter.patch("/:id/update" , auth , plannerController.updatePlannerById);
-plannerRouter.delete("/:id/delete" , auth , plannerController.deletePlannerById);
+plannerRouter.patch("/:date/update" , auth , plannerController.updatePlannerByDate);
+plannerRouter.delete("/:date/delete" , auth , plannerController.deletePlannerByDate);
 
 module.exports = plannerRouter;

@@ -337,6 +337,48 @@ const checkDueDate = async (req, res, next) => {
   }
 };
 
+
+const addFile = async (req, res, next) => {
+  try {
+    const existing = await User.findOne({email : req.user.email});
+    if(existing == null){
+      return next (new ErrorHandler(400 , "No user found"));
+    }
+    const existingCard = await Card.findById(req.params.id);
+    if(existingCard == null){
+      return next (new ErrorHandler(400 , "No card found"));
+    }
+    existingCard.file.push("public/files" + "/" + req.file.filename);
+    await existingCard.save();
+    res.json({
+      success: true,
+      message : "File added successfully"
+    });
+  } catch (e) {
+    next(e);
+  }
+}
+
+const getFiles = async (req , res , next) => {
+  try{
+    const existing = await User.findOne({email : req.user.email});
+    if(existing == null){
+      return next (new ErrorHandler(400 , "No user found"));
+    }
+    const existingCard = await Card.findById(req.params.id);
+    if(existingCard == null){
+      return next (new ErrorHandler(400 , "No card found"));
+    }
+    const file = existingCard.file;
+    res.json({
+      success: true,
+      file : file
+    });
+  }catch(e){
+    next(e);
+  }
+}
+
 module.exports = {
   getCardById,
   addCard,
@@ -346,4 +388,6 @@ module.exports = {
   addColorToCard,
   changeCurrentStatusOfCard,
   checkDueDate,
+  addFile,
+  getFiles,
 };

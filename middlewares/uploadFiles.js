@@ -3,14 +3,13 @@ const path = require("path");
 
 const storage = multer.diskStorage({
   destination: (req, res, cb) => {
-    cb(null, "public/profile_image");
+    cb(null, "public/files");
   },
   filename: (req, file, cb) => {
-    const allowedExtensions = ['.jpeg', '.jpg', '.png'];
-
+    const allowedExtensions = ['.pdf', '.ppt', '.jpeg', '.jpg', '.png', '.doc', '.docx'];
     const fileExtension = path.extname(file.originalname).toLowerCase();
     if (!allowedExtensions.includes(fileExtension)) {
-      const error = new Error('Only JPEG, JPG, and PNG files are allowed!');
+      const error = new Error('Only PDF, PPT, JPEG, PNG, Word (doc/docx), and PPTX files are allowed!');
       error.code = 'EXTENSION_NOT_ALLOWED';
       return cb(error, null);
     }
@@ -19,8 +18,8 @@ const storage = multer.diskStorage({
   },
 });
 
-const uploadPhoto = multer({
+const uploadFile = multer({
   storage: storage,
-}).single("photo");
+}).single("file");
 
-module.exports = { uploadPhoto };
+module.exports = { uploadFile };
