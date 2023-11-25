@@ -190,7 +190,7 @@ const deleteList = async (req, res, next) => {
 module.exports = {
   addList,
   getListById,
-  getCardsOfList,
   updateList,
   deleteList,
+  getCardsOfList,
 };

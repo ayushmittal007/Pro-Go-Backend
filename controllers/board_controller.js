@@ -15,9 +15,14 @@ const getAll = async (req, res, next) => {
       "userId",
       "_id username email"
     );
+
+    const boardsCollaborated = await Board.find({ 
+      members: { $in: [req.user.email] }}
+      ).populate("userId", "_id username email");  
+   
     res.status(201).json({
       success: true,
-      data: { boardsList },
+      data: { "BoardsOwned" :  boardsList , "BoardsCollaborated" : boardsCollaborated },
     });
   } catch (error) {
     next(error);
@@ -29,6 +34,13 @@ const addBoard = async (req, res, next) => {
     const input = await boardSchema.validateAsync(req.body);
     const boardName = req.body.name;
     const userId = req.user._id;
+    const numberOfBoardsOfUser = await Board.find({ userId: userId }).count();
+    if (numberOfBoardsOfUser >= 10) {
+      return next(
+        new ErrorHandler(400, "You can't create more than 10 boards!")
+      );  
+    }
+
     const existing = await Board.findOne({ name: boardName, userId: userId });
     if (existing) {
       return next(
@@ -232,7 +244,13 @@ const addMember = async (req, res, next) => {
     const to_email = body.email;
     const _id = req.params.id;
     const board = await Board.findById(_id);
+    if(!board){
+      return next(new ErrorHandler(400, "Board not found!"));
+    }
     const userId = await User.findById(board.userId);
+    if(!userId){
+      return next(new ErrorHandler(400, "User not found!"));
+    }
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }

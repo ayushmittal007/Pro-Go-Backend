@@ -382,8 +382,8 @@ const getFiles = async (req , res , next) => {
 module.exports = {
   getCardById,
   addCard,
-  deleteCard,
   updateCard,
+  deleteCard,
   addDataToCard,
   addColorToCard,
   changeCurrentStatusOfCard,

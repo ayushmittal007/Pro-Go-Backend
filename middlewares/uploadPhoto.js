@@ -6,7 +6,7 @@ const storage = multer.diskStorage({
     cb(null, "public/profile_image");
   },
   filename: (req, file, cb) => {
-    const allowedExtensions = ['.jpeg', '.jpg', '.png'];
+    const allowedExtensions = ['.jpeg', '.jpg', '.png' , '.svg'];
 
     const fileExtension = path.extname(file.originalname).toLowerCase();
     if (!allowedExtensions.includes(fileExtension)) {
