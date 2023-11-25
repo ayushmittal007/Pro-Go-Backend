@@ -10,9 +10,11 @@ const plannerSchema = new Mongoose.Schema({
     },
     goals : {
         type : String,
+        default : ""
     },
     note : {
         type : String,
+        default : ""
     },
     UserId : {
         type : Mongoose.Schema.Types.ObjectId,
