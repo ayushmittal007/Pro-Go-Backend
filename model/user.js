@@ -82,6 +82,14 @@ const UserSchema = new Mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  rating : {
+    type: Number,
+    default: 0,
+  },
+  review : {
+    type: String,
+    default: null,
+  },
 })
 
 const User = Mongoose.model("user", UserSchema)

@@ -14,7 +14,12 @@ const {
   search,
   progress,
   subscribe,
+  rateProGo,
+  getRating,
+  writeReview,
+  getReview,
 } = require("../controllers/user_controller");
+
 const { uploadPhoto } = require("../middlewares/uploadPhoto");
 const auth = require("../middlewares/auth");
 
@@ -31,5 +36,9 @@ userRouter.get("/get-recently-worked", auth, getRecentlyWorked);
 userRouter.get("/search", auth, search);
 userRouter.get("/progress", auth, progress);
 userRouter.post("/subscribe", auth, subscribe);
+userRouter.post("/add-rating", auth, rateProGo);
+userRouter.get("/get-rating", auth, getRating);
+userRouter.post("/add-review", auth, writeReview);
+userRouter.get("/get-review", auth, getReview);
 
 module.exports = userRouter;

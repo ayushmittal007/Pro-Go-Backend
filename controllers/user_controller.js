@@ -102,7 +102,7 @@ const addWorkSpaceMember = async (req, res, next) => {
     const User = req.user;
     const existing = await User.findOne({email : req.body.email});
     if(existing == null){
-      return next (new ErrorHandler(400 , "No user found"));
+      return next (new ErrorHandler(400 , "User do not exist"));
     }
     else {
       if(User.usersWorkSpcaeMember.includes(req.body.email)){
@@ -288,7 +288,69 @@ const subscribe = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-};
+}
+
+const rateProGo = async (req, res, next) => {
+  try {
+    const existing = await User.findOne({ email: req.user.email });
+    if (!existing) {
+      return next(new ErrorHandler(400, "User not found"));
+    }
+    await User.findOneAndUpdate({ email: req.user.email }, { rating: req.body.rating });
+    res.json({
+      success: true,
+      message: "Rated successfully"
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+const getRating = async (req, res, next) => {
+  try {
+    const existing = await User.findOne({ email: req.user.email });
+    if (!existing) {
+      return next(new ErrorHandler(400, "User not found"));
+    }
+    res.json({
+      success: true,
+      rating: existing.rating
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+const writeReview = async (req, res, next) => {
+  try {
+    const existing = await User.findOne({ email: req.user.email });
+    if (!existing) {
+      return next(new ErrorHandler(400, "User not found"));
+    }
+    await User.findOneAndUpdate({ email: req.user.email }, { review : req.body.review });
+    res.json({
+      success: true,
+      message: "Review added successfully"
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+const getReview = async (req, res, next) => {
+  try {
+    const existing = await User.findOne({ email: req.user.email });
+    if (!existing) {
+      return next(new ErrorHandler(400, "User not found"));
+    }
+    res.json({
+      success: true,
+      review : existing.review
+    });
+  } catch (err) {
+    next(err);
+  }
+}
 
 module.exports = {
   uploadProfilePhoto,
@@ -303,5 +365,9 @@ module.exports = {
   getRecentlyWorked,
   search,
   progress,
-  subscribe
+  subscribe,
+  rateProGo,
+  writeReview,
+  getRating,
+  getReview
 }
