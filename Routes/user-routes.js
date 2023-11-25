@@ -8,7 +8,9 @@ const {
   addWorkSpaceMember,
   getAllWorkSpaceMember,
   addRecentlyViewed,
+  getRecentlyViewed,
   addRecentlyWorked,
+  getRecentlyWorked,
   search,
   progress,
   subscribe,
@@ -23,7 +25,9 @@ userRouter.post("/add-user-details", auth, addUserDetails);
 userRouter.post("/add-member", auth, addWorkSpaceMember);
 userRouter.get("/get-all-member", auth, getAllWorkSpaceMember);
 userRouter.post("/add-recently-viewed", auth, addRecentlyViewed);
+userRouter.get("/get-recently-viewed", auth, getRecentlyViewed);
 userRouter.post("/add-recently-worked", auth, addRecentlyWorked);
+userRouter.get("/get-recently-worked", auth, getRecentlyWorked);
 userRouter.get("/search", auth, search);
 userRouter.get("/progress", auth, progress);
 userRouter.post("/subscribe", auth, subscribe);

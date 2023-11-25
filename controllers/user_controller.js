@@ -150,6 +150,21 @@ const addRecentlyViewed = async (req, res, next) => {
   }
 }
 
+const getRecentlyViewed = async (req, res, next) => {
+  try{
+    const User = req.user;
+    if(!User.recentlyViewed){
+      return next (new ErrorHandler(400 , "No user found"));
+    }
+    res.json({
+      success: true,
+      recentlyViewed : User.recentlyViewed
+    });
+  }catch(err){
+    next(err);
+  }
+}
+
 const addRecentlyWorked = async (req, res, next) => { 
   try{
     const User = req.user;
@@ -159,6 +174,21 @@ const addRecentlyWorked = async (req, res, next) => {
     res.json({
       success: true,
       message : "Added successfully"
+    });
+  }catch(err){
+    next(err);
+  }
+}
+
+const getRecentlyWorked = async (req, res, next) => {
+  try{
+    const User = req.user;
+    if(!User.recentlyWorked){
+      return next (new ErrorHandler(400 , "No user found"));
+    }
+    res.json({
+      success: true,
+      recentlyWorked : User.recentlyWorked
     });
   }catch(err){
     next(err);
@@ -268,7 +298,9 @@ module.exports = {
   addWorkSpaceMember,
   getAllWorkSpaceMember,
   addRecentlyViewed,
+  getRecentlyViewed,
   addRecentlyWorked,
+  getRecentlyWorked,
   search,
   progress,
   subscribe
