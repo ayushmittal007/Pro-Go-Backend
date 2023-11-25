@@ -16,32 +16,32 @@ const newSchema = Joi.object({
 });
 
 const boardSchema = Joi.object({
-  name : Joi.string().required().min(4).max(20),
+  name : Joi.string().required().max(20),
   templateLink : Joi.string(),
   templateName : Joi.string(),
   color : Joi.string().max(20),
 });
 
 const updateBoardSchema = Joi.object({
-  name : Joi.string().min(4).max(20),
+  name : Joi.string().max(20),
   templateLink : Joi.string(),
   templateName : Joi.string(),
   color : Joi.string().max(20),
 });
 
 const listSchema = Joi.object({
-  name : Joi.string().required().min(4).max(20),
+  name : Joi.string().required().max(20),
   boardId: Joi.string().required(),
   color : Joi.string().max(20),
 });
 
 const  updateListSchema = Joi.object({
-  name : Joi.string().min(4).max(20),
+  name : Joi.string().max(20),
   color : Joi.string().max(20),
 });
 
 const cardSchema = Joi.object({
-  name : Joi.string().required().min(4).max(20),
+  name : Joi.string().required().max(20),
   boardId: Joi.string().required(),
   listId: Joi.string().required(),
   daysAlloted : Joi.number(),
@@ -50,19 +50,19 @@ const cardSchema = Joi.object({
 });
 
 const updateCardSchema = Joi.object({
-  name : Joi.string().min(4).max(20),
+  name : Joi.string().max(20),
   daysAlloted : Joi.number(),
   description : Joi.string(),
   color : Joi.string().max(20),
 });
 
 const commentSchema = Joi.object({
-  text : Joi.string().required().min(4).max(200),
+  text : Joi.string().required().max(200),
   cardId: Joi.string().required(),
 });
 
 const updateCommentSchema = Joi.object({
-  text : Joi.string().min(4).max(200),
+  text : Joi.string().min(3).max(200),
 });
 
 const idSchema = Joi.object({
