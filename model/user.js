@@ -77,7 +77,11 @@ const UserSchema = new Mongoose.Schema({
   recentlyWorked : {
     type: Array,
     default: [],
-  }
+  },
+  isSubscribed : {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const User = Mongoose.model("user", UserSchema)

@@ -1,10 +1,11 @@
-const { Board, List, Card , user } = require('../model');
+const { Board, List, Card , User } = require('../model');
 const { ErrorHandler } = require('../middlewares/errorHandling');
 const { emailSchema , recentlyViewedSchema , recentlyWorkedSchema } = require("../utils/joi_validations");
+const { subscribeMail } = require("../utils/subscribe_mail");
 
 const uploadProfilePhoto = async (req, res, next) => {
     try {
-      const existing = await user.findOne({email : req.user.email});
+      const existing = await User.findOne({email : req.user.email});
       if(existing.photoUrl != null){
         existing.photoUrl = "public/profile_image" + "/" + req.file.filename;
         await existing.save();
@@ -28,7 +29,7 @@ const uploadProfilePhoto = async (req, res, next) => {
 
 const getPhotoUrl = async (req, res, next) => {
   try {
-    const existing = await user.findOne({email : req.user.email});
+    const existing = await User.findOne({email : req.user.email});
     if(existing.photoUrl == null){
       return next (new ErrorHandler(400 , "No photo found"));
     }
@@ -45,7 +46,7 @@ const getPhotoUrl = async (req, res, next) => {
 
 const addUserDetails = async (req, res, next) => {
   try{
-    const existing = await user.findOne({email : req.user.email});
+    const existing = await User.findOne({email : req.user.email});
     console.log(existing);
     if(existing == null){
       return next (new ErrorHandler(400 , "No user found"));
@@ -81,7 +82,7 @@ const addUserDetails = async (req, res, next) => {
 
 const getUserDetails = async (req, res, next) => {
   try {
-    const existing = await user.findOne({email : req.user.email});
+    const existing = await User.findOne({email : req.user.email});
     if(existing == null){
       return next (new ErrorHandler(400 , "No user found"));
     }
@@ -99,7 +100,7 @@ const getUserDetails = async (req, res, next) => {
 const addWorkSpaceMember = async (req, res, next) => {
   try{
     const User = req.user;
-    const existing = await user.findOne({email : req.body.email});
+    const existing = await User.findOne({email : req.body.email});
     if(existing == null){
       return next (new ErrorHandler(400 , "No user found"));
     }
@@ -238,6 +239,27 @@ const progress = async (req, res, next) => {
   }
 }
 
+const subscribe = async (req, res, next) => {
+  try {
+    const existing = await User.findOne({ email: req.user.email });
+    console.log(existing);
+    if (!existing) {
+      return next(new ErrorHandler(400, "User not found"));
+    }
+    if (existing.isSubscribed) {
+      return next(new ErrorHandler(400, "User already subscribed"));
+    }
+    subscribeMail(req.user.email);
+    await User.findOneAndUpdate({ email: req.user.email }, { isSubscribed: true });
+    res.json({
+      success: true,
+      message: "Subscribed successfully"
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   uploadProfilePhoto,
   getPhotoUrl,
@@ -248,5 +270,6 @@ module.exports = {
   addRecentlyViewed,
   addRecentlyWorked,
   search,
-  progress
+  progress,
+  subscribe
 }
