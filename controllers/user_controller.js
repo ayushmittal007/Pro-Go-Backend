@@ -1,4 +1,4 @@
-const { Board, List, Card , User } = require('../model');
+const { Board, List, Card , User , Planner } = require('../model');
 const { ErrorHandler } = require('../middlewares/errorHandling');
 const { emailSchema , recentlyViewedSchema , recentlyWorkedSchema } = require("../utils/joi_validations");
 const { subscribeMail } = require("../utils/subscribe_mail");
@@ -352,6 +352,18 @@ const getReview = async (req, res, next) => {
   }
 }
 
+const getCompleteUserPlanner = async (req, res, next) => {
+  try {
+      const planner = await Planner.find({ UserId : req.user._id});
+      if (!planner) {
+          return res.status(404).json({ success: false, message: 'Planner not found' });
+      }
+      res.json({ success: true, data: planner });
+  } catch (error) {
+      next(error);
+  }
+}
+
 module.exports = {
   uploadProfilePhoto,
   getPhotoUrl,
@@ -369,5 +381,6 @@ module.exports = {
   rateProGo,
   writeReview,
   getRating,
-  getReview
+  getReview,
+  getCompleteUserPlanner,
 }

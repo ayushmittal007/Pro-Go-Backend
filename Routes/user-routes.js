@@ -18,6 +18,7 @@ const {
   getRating,
   writeReview,
   getReview,
+  getCompleteUserPlanner
 } = require("../controllers/user_controller");
 
 const { uploadPhoto } = require("../middlewares/uploadPhoto");
@@ -40,5 +41,6 @@ userRouter.post("/add-rating", auth, rateProGo);
 userRouter.get("/get-rating", auth, getRating);
 userRouter.post("/add-review", auth, writeReview);
 userRouter.get("/get-review", auth, getReview);
+userRouter.get("/get-full-planner", auth, getCompleteUserPlanner);
 
 module.exports = userRouter;
