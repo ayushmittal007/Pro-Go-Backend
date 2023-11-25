@@ -52,13 +52,12 @@ const checkPayment = async (req, res , next) =>  {
 
         console.log("sig" + req.body.signature);
         console.log("sig" + expectedSignature);
-
+        console.log(req.body.subscriptionType);
         if (expectedSignature === req.body.signature) {
-            await User.findOneAndUpdate(
-                { email: req.user.email },
-                { isPremium: true } , 
-                { subscriptionType: req.body.subscriptionType}
-            );
+            const user = await User.findOne({ email: req.user.email });
+            user.isPremium = true;
+            user.subscriptionType = req.body.subscriptionType;
+            await user.save(); 
             console.log("Payment successful");
             return res.status(200).json({ status: "success" });
         } else {
