@@ -29,6 +29,10 @@ const UserSchema = new Mongoose.Schema({
     type: String,
     default: null,
   },
+  subscriptionTime : {
+    type : String,
+    default: null,
+  },
   shortId: {
     type: String,
     default: shortId.generate,

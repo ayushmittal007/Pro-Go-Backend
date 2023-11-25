@@ -32,7 +32,6 @@ const addCard = async (req, res, next) => {
       listId: listId,
       boardId: boardId,
     });
-    // console.log(existing)
     if (existing) {
       return next(new ErrorHandler(400, "Card with this name already exists!"));
     }

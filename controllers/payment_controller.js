@@ -41,22 +41,17 @@ const createOrder = async (req, res, next) => {
 const checkPayment = async (req, res , next) =>  {
     try{
         console.log("inside checkPayment")
-        // console.log(`req.body.order_id is ${req.body.order_id}`)
-        // console.log(`req.body.payment_id is ${req.body.payment_id}`)
-
         body = req.body.order_id + "|" + req.body.payment_id;
         var expectedSignature = crypto
         .createHmac("sha256", process.env.RAZORPAY_SECRET_KEY)
         .update(body.toString())
         .digest("hex");
 
-        console.log("sig" + req.body.signature);
-        console.log("sig" + expectedSignature);
-        console.log(req.body.subscriptionType);
         if (expectedSignature === req.body.signature) {
             const user = await User.findOne({ email: req.user.email });
             user.isPremium = true;
             user.subscriptionType = req.body.subscriptionType;
+            user.subscriptionTime = req.body.subscriptionTime;
             await user.save(); 
             console.log("Payment successful");
             return res.status(200).json({ status: "success" });
