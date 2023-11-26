@@ -68,7 +68,7 @@ const getAllComments = async (req, res, next) => {
       );
     }
 
-    const comments = await Comment.find({ cardId });
+    const comments = await Comment.find({ cardId }).populate("userId" , "username email photoUrl");
     res
       .status(200)
       .json({
