@@ -1,6 +1,7 @@
-# Team Management System
+# Pro-Go Backend
 
-Welcome to the Team Management System, a robust and secure platform built on Node.js for effective team collaboration and project management.
+A Nodejs based backend system using MongoDB,NodeJS,Express,Mongoose and deployed on render.
+A robust and secure platform for effective team collaboration and project management.
 
 ## Table of Contents
 
