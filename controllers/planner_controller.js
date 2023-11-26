@@ -21,7 +21,11 @@ const createPlanner = async (req, res, next) => {
             UserId : req.user._id    
         });
         const savedPlanner = await newPlanner.save();
-        res.status(201).json({ success: true,message : "Creation Successfull" , data: savedPlanner });
+        res.status(201).json({ 
+            success: true,
+            message : "Creation Successfull" , 
+            data: { savedPlanner }  
+        });
     } catch (error) {
         next(error);
     }
@@ -39,7 +43,10 @@ const getPlannerByDate = async (req, res, next) => {
         if(req.user._id.toString() !== planner.UserId.toString()){
             return next(new ErrorHandler(400, "You are not allowed to access this planner!"));
         }
-        res.json({ success: true, data: planner });
+        res.json({ 
+            success: true,
+            data: { planner }
+        });
     } catch (error) {   
         next(error);
     }
@@ -65,7 +72,11 @@ const updatePlannerByDate = async (req, res, next) => {
         if (!updatedPlanner) {
             return res.status(404).json({ success: false, message: 'Planner not found' });
         }
-        res.json({ success: true, message : "Updation Successfull"  , data: updatedPlanner });
+        res.json({ 
+            success: true,
+            message : "Updation Successfull" ,
+            data: updatedPlanner 
+        });
     } catch (error) {
         next(error);
     }
@@ -85,7 +96,10 @@ const deletePlannerByDate = async (req, res, next) => {
         if (!deletedPlanner) {
             return res.status(404).json({ success: false, message: 'Planner not found' });
         }
-        res.json({ success: true, message : "Deletion Successfull" });
+        res.json({ 
+            success: true,
+            message : "Deletion Successfull" 
+        });
     } catch (error) {
         next(error);
     }

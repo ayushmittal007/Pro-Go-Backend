@@ -36,6 +36,7 @@ const addList = async (req, res, next) => {
     const respData = await list.save();
     res.status(201).json({
       success: true,
+      message: "List added successfully", 
       data: { respData },
     });
   } catch (error) {

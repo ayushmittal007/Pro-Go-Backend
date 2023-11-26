@@ -371,7 +371,7 @@ const getFiles = async (req , res , next) => {
     const file = existingCard.file;
     res.json({
       success: true,
-      file : file
+      files : file
     });
   }catch(e){
     next(e);
@@ -386,7 +386,7 @@ const moveCard = async (req, res, next) => {
     if(!card){
       return next(new ErrorHandler(400, "Card not found!"));
     }
-    
+
     const board = await Board.findById(card.boardId).populate(
       "userId",
       "_id username email usersWorkSpcaeMember"

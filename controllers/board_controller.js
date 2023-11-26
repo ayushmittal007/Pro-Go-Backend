@@ -60,6 +60,7 @@ const addBoard = async (req, res, next) => {
     await req.user.save();
     res.status(201).json({
       success: true,
+      message: `Board Created Successfully , only ${10 - numberOfBoardsOfUser - 1} boards left!`,
       data: { respData },
     });
   } catch (error) {
