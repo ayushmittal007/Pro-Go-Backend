@@ -94,10 +94,6 @@ const UserSchema = new Mongoose.Schema({
     type: String,
     default: null,
   },
-  userCreatedAt : {
-    type: Date,
-    default: Date.now,
-  },
 },
 {
   timestamps : true
