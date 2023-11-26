@@ -14,5 +14,6 @@ cardRouter.post("/:id/addColor" , auth , cardController.addColorToCard);
 cardRouter.post("/:id/changeStatus" , auth , cardController.changeCurrentStatusOfCard);
 cardRouter.post("/:id/addFile" , auth , uploadFile , cardController.addFile);
 cardRouter.get("/:id/getFiles" , auth , cardController.getFiles);
+cardRouter.post("/:id/moveCard" , auth , cardController.moveCard);
 
 module.exports = cardRouter;

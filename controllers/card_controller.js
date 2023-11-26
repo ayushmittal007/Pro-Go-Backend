@@ -378,6 +378,49 @@ const getFiles = async (req , res , next) => {
   }
 }
 
+const moveCard = async (req, res, next) => {
+  try{
+    const input = await idSchema.validateAsync(req.params);
+    const _id = req.params.id;
+    const card = await Card.findById(_id);
+    if(!card){
+      return next(new ErrorHandler(400, "Card not found!"));
+    }
+    const board = await Board.findById(card.boardId).populate(
+      "userId",
+      "_id username email usersWorkSpcaeMember"
+    );
+    if(!board){
+      return next(new ErrorHandler(400, "Board not found!"));
+    }
+    console.log(board)
+    if (
+      req.user._id.toString() != board.userId._id.toString() &&
+      !board.members.includes(req.user.email) &&
+      !board.userId.usersWorkSpcaeMember.includes(req.user.email)
+    ) {
+      return next(
+        new ErrorHandler(400, "You are not allowed to change this card!")
+      );
+    }
+    const sourceListId = req.body.sourceListId;
+    const destinationListId = req.body.destinationListId;
+    const sourceList = await List.findById(sourceListId);
+    const destinationList = await List.findById(destinationListId);
+    if(!sourceList || !destinationList){
+      return next(new ErrorHandler(400, "Lists not found!"));
+    }
+    await Card.findByIdAndUpdate(_id, { listId : destinationListId });
+    res.status(201).json({
+      status: true,
+      message: "Card moved successfully",
+    });
+
+  }catch(err){
+    next(err)
+  }
+}
+
 module.exports = {
   getCardById,
   addCard,
@@ -389,4 +432,5 @@ module.exports = {
   checkDueDate,
   addFile,
   getFiles,
+  moveCard
 };
