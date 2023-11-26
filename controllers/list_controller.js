@@ -187,10 +187,65 @@ const deleteList = async (req, res, next) => {
   }
 };
 
+const moveListById = async (req, res, next) => {
+  try{
+    const input = await idSchema.validateAsync(req.params);
+    const _id = req.params.id;
+    const existing = await List.findById(_id);
+    if(!existing){
+      return next(new ErrorHandler(400, "List not found!"));
+    }
+    const board = await Board.findById(existing.boardId).populate(
+      "userId",
+      "_id username email usersWorkSpcaeMember"
+    );
+    if (!board) {
+      return next(new ErrorHandler(400, "Board not found!"));
+    }
+    if (
+      !board.members.includes(req.user.email) &&
+      req.user._id.toString() !== board.userId._id.toString() &&
+      !board.userId.usersWorkSpcaeMember.includes(req.user.email)
+    ) {
+      return next(new ErrorHandler(400, "You can not move this list!"));
+    }
+
+    const targetBoardId = req.body.targetBoardId;
+    const targetBoard = await Board.findById(targetBoardId).populate(
+      "userId",
+      "_id username email usersWorkSpcaeMember"
+    );
+    if(!targetBoard){
+      return next(new ErrorHandler(400, "Target Board not found!"));
+    }
+    if (
+      !targetBoard.members.includes(req.user.email) &&
+      req.user._id.toString() !== targetBoard.userId._id.toString() &&
+      !targetBoard.userId.usersWorkSpcaeMember.includes(req.user.email)
+    ) {
+      return next(new ErrorHandler(400, "You can not move this list!"));
+    } 
+    const cards = await Card.find({ listId: _id });
+    for(let i=0;i<cards.length;i++){
+      cards[i].boardId = targetBoardId;
+      await cards[i].save();
+    } 
+    existing.boardId = targetBoardId;
+    await existing.save();
+    res.status(201).json({
+      success: true,
+      message: "List moved successfully",
+    });
+  }catch(error){
+    next(error);
+  }
+}
+
 module.exports = {
   addList,
   getListById,
   updateList,
   deleteList,
   getCardsOfList,
+  moveListById
 };

@@ -8,5 +8,6 @@ listRouter.post("/add" , auth , listController.addList);
 listRouter.get("/:id/cards" , auth , listController.getCardsOfList);
 listRouter.put("/:id/update" , auth , listController.updateList);
 listRouter.delete("/:id/delete" , auth, listController.deleteList);
+listRouter.post("/:id/move" , auth , listController.moveListById);
 
 module.exports = listRouter;

@@ -386,6 +386,7 @@ const moveCard = async (req, res, next) => {
     if(!card){
       return next(new ErrorHandler(400, "Card not found!"));
     }
+    
     const board = await Board.findById(card.boardId).populate(
       "userId",
       "_id username email usersWorkSpcaeMember"
@@ -393,7 +394,7 @@ const moveCard = async (req, res, next) => {
     if(!board){
       return next(new ErrorHandler(400, "Board not found!"));
     }
-    console.log(board)
+    
     if (
       req.user._id.toString() != board.userId._id.toString() &&
       !board.members.includes(req.user.email) &&
@@ -403,6 +404,7 @@ const moveCard = async (req, res, next) => {
         new ErrorHandler(400, "You are not allowed to change this card!")
       );
     }
+
     const sourceListId = req.body.sourceListId;
     const destinationListId = req.body.destinationListId;
     const sourceList = await List.findById(sourceListId);
@@ -410,6 +412,7 @@ const moveCard = async (req, res, next) => {
     if(!sourceList || !destinationList){
       return next(new ErrorHandler(400, "Lists not found!"));
     }
+
     await Card.findByIdAndUpdate(_id, { listId : destinationListId });
     res.status(201).json({
       status: true,
