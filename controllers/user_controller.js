@@ -139,6 +139,10 @@ const addRecentlyViewed = async (req, res, next) => {
   try{
     const User = req.user;
     const input = await recentlyViewedSchema.validateAsync(req.body);
+    if(User.recentlyViewed.includes(input)){
+      return next (new ErrorHandler(400 , "Already added"));
+    }
+    
     User.recentlyViewed.push(input);
     await User.save();
     res.json({
@@ -169,6 +173,10 @@ const addRecentlyWorked = async (req, res, next) => {
   try{
     const User = req.user;
     const input = await recentlyWorkedSchema.validateAsync(req.body);
+    if(User.recentlyWorked.includes(input)){
+      return next (new ErrorHandler(400 , "Already added"));
+    }
+
     User.recentlyWorked.push(input);
     await User.save();
     res.json({
@@ -308,13 +316,17 @@ const rateProGo = async (req, res, next) => {
 
 const getRating = async (req, res, next) => {
   try {
-    const existing = await User.findOne({ email: req.user.email });
-    if (!existing) {
-      return next(new ErrorHandler(400, "User not found"));
-    }
+    const avgRating = await User.aggregate([{
+      $group : {
+        _id : null,
+        avgRating : {
+          $avg : "$rating"
+        }
+      }
+    }]);
     res.json({
       success: true,
-      rating: existing.rating
+      avgRating : avgRating[0].avgRating
     });
   } catch (err) {
     next(err);

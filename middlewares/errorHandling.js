@@ -7,6 +7,7 @@ class ErrorHandler extends Error {
 
 module.exports = {
     errorMiddleware : (err,req,res,next) => {
+        console.log(err);
         err.message = err.message || "Interal Server Error";
         err.statusCode = err.statusCode || 500;
 
