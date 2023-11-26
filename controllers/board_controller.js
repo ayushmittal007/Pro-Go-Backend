@@ -303,6 +303,17 @@ const getAllMemberInTheBoard = async (req, res, next) => {
       );
     }
     const members = board.members;
+    for (let i = 0; i < members.length; i++) {
+      const user = await User.findOne({ email: members[i] });
+      if (!user) {
+        return next(new ErrorHandler(400, "User not found!"));
+      }
+      members[i] = {
+        email : user.email,
+        username : user.username,
+        photoUrl : user.photoUrl
+      }
+    }
     res.json({
       success: true,
       data: { members },

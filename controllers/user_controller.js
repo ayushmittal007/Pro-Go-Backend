@@ -126,6 +126,17 @@ const getAllWorkSpaceMember = async (req, res, next) => {
     if(!user.usersWorkSpcaeMember){
       return next (new ErrorHandler(400 , "No user found"));
     }
+    for(let i=0;i<user.usersWorkSpcaeMember.length;i++){
+      const user_details = await User.findOne({ email: user.usersWorkSpcaeMember[i] });
+      if (!user) {
+        return next(new ErrorHandler(400, "User not found!"));
+      }
+      user.usersWorkSpcaeMember[i] = {
+        email : user_details.email,
+        username : user_details.username,
+        photoUrl : user_details.photoUrl
+      }
+    }
     res.json({
       success: true,
       usersWorkSpcaeMember : user.usersWorkSpcaeMember
