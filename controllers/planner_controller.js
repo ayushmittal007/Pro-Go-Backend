@@ -1,4 +1,5 @@
 const { ErrorHandler } = require('../middlewares/errorHandling');
+const { User } = require('../model');
 const Planner = require('../model/planner'); 
 const { createPlannerSchema , updatePlannerSchema } = require('../utils/joi_validations');
 
@@ -6,7 +7,9 @@ const createPlanner = async (req, res, next) => {
     try {
         const input = await createPlannerSchema.validateAsync(req.body);
         const {date, taskList, goals, note } = req.body;
-        const existing = await Planner.findOne({ date : date});
+        console.log(req.user._id);
+        const existing = await Planner.findOne({ date: date, UserId : req.user._id });
+
         if(existing){
             return next(new ErrorHandler(400, "Planner already exists!"));
         }
@@ -28,7 +31,7 @@ const getPlannerByDate = async (req, res, next) => {
     try {
         const date = req.params.date;
         console.log(date);
-        const planner = await Planner.findOne({ date : date});
+        const planner = await Planner.findOne({ date : date , UserId : req.user._id});
         console.log(planner);
         if (!planner) {
             return res.status(404).json({ success: false, message: 'Planner not found' });
@@ -47,7 +50,7 @@ const updatePlannerByDate = async (req, res, next) => {
         const input = await updatePlannerSchema.validateAsync(req.body);
         const { taskList, goals, note } = req.body;
         const date = req.params.date;
-        const planner = await Planner.findOne({ date : date});
+        const planner = await Planner.findOne({ date : date , UserId : req.user._id});
         if (!planner) {
             return res.status(404).json({ success: false, message: 'Planner not found' });
         }
@@ -71,7 +74,7 @@ const updatePlannerByDate = async (req, res, next) => {
 const deletePlannerByDate = async (req, res, next) => {
     try {
         const date = req.params.date;
-        const planner = await Planner.findOne({ date : date});
+        const planner = await Planner.findOne({ date : date , UserId : req.user._id});
         if (!planner) {
             return res.status(404).json({ success: false, message: 'Planner not found' });
         }
