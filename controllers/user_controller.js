@@ -99,17 +99,17 @@ const getUserDetails = async (req, res, next) => {
 
 const addWorkSpaceMember = async (req, res, next) => {
   try{
-    const User = req.user;
+    const user = req.user;
     const existing = await User.findOne({email : req.body.email});
     if(existing == null){
       return next (new ErrorHandler(400 , "User do not exist"));
     }
     else {
-      if(User.usersWorkSpcaeMember.includes(req.body.email)){
+      if(user.usersWorkSpcaeMember.includes(req.body.email)){
         return next (new ErrorHandler(400 , "User already added"));
       }
-      User.usersWorkSpcaeMember.push(req.body.email);
-      await User.save();
+      user.usersWorkSpcaeMember.push(req.body.email);
+      await user.save();
       res.json({
         success: true,
         message : "User added successfully"
@@ -122,13 +122,13 @@ const addWorkSpaceMember = async (req, res, next) => {
 
 const getAllWorkSpaceMember = async (req, res, next) => {
   try{
-    const User = req.user;
-    if(!User.usersWorkSpcaeMember){
+    const user = req.user;
+    if(!user.usersWorkSpcaeMember){
       return next (new ErrorHandler(400 , "No user found"));
     }
     res.json({
       success: true,
-      usersWorkSpcaeMember : User.usersWorkSpcaeMember
+      usersWorkSpcaeMember : user.usersWorkSpcaeMember
     });
   }catch(err){
     next(err);

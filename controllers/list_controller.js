@@ -202,6 +202,8 @@ const moveListById = async (req, res, next) => {
     if (!board) {
       return next(new ErrorHandler(400, "Board not found!"));
     }
+    console.log(board);
+    console.log(board.userId);
     if (
       !board.members.includes(req.user.email) &&
       req.user._id.toString() !== board.userId._id.toString() &&
@@ -209,7 +211,7 @@ const moveListById = async (req, res, next) => {
     ) {
       return next(new ErrorHandler(400, "You can not move this list!"));
     }
-
+    console.log(2);
     const targetBoardId = req.body.targetBoardId;
     const targetBoard = await Board.findById(targetBoardId).populate(
       "userId",
