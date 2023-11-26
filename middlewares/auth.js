@@ -13,6 +13,9 @@ const auth = async (req, res, next) => {
             return next(new ErrorHandler(400, "Token verification failed, access denied."));
         }
         const user = await User.findOne({ _id: verified.id });
+        if(!user){
+            return next(new ErrorHandler(400, "No user found."));
+        }
         let time = 14*24*60*60*100;
         if(user.isPremium == true){
             time = user.subscriptionTime * 24 * 60 *60 *100;

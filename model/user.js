@@ -30,8 +30,8 @@ const UserSchema = new Mongoose.Schema({
     default: null,
   },
   subscriptionTime : {
-    type : String,
-    default: null,
+    type : Number,
+    default: 14,
   },
   shortId: {
     type: String,
@@ -88,7 +88,7 @@ const UserSchema = new Mongoose.Schema({
   },
   rating : {
     type: Number,
-    default: 0,
+    default: 3,
   },
   review : {
     type: String,
