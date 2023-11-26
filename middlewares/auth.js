@@ -13,6 +13,15 @@ const auth = async (req, res, next) => {
             return next(new ErrorHandler(400, "Token verification failed, access denied."));
         }
         const user = await User.findOne({ _id: verified.id });
+        let time = 14*24*60*60*100;
+        if(user.isPremium == true){
+            time = user.subscriptionTime * 24 * 60 *60 *100;
+        }
+        const expirationTime = user.userCreatedAt.getTime() + time;
+        if (expirationTime <= Date.now()) {
+            return next(new ErrorHandler(400, "Subscription expired or free trial expired, access denied."));
+        }
+
         req.user = user
         next()
     } catch (error) {
