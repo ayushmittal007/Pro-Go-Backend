@@ -111,8 +111,6 @@ const signIn =  async (req, res, next) => {
       const token = jwt.sign(payload, process.env.USER_KEY, {
         expiresIn: "2d",
       });
-      localStorage.setItem("auth-token", token);
-
       res.json({ success : true, message : "Login successful" ,data : {
           token,
           username: user.username,
