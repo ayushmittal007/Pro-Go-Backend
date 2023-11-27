@@ -35,7 +35,7 @@ const addBoard = async (req, res, next) => {
     const boardName = req.body.name;
     const userId = req.user._id;
     const numberOfBoardsOfUser = await Board.find({ userId: userId }).count();
-    if (numberOfBoardsOfUser >= 10) {
+    if (numberOfBoardsOfUser >= 10 && req.user.isPremium === false) {
       return next(
         new ErrorHandler(400, "You can't create more than 10 boards!")
       );  
@@ -267,6 +267,9 @@ const addMember = async (req, res, next) => {
     }
 
     console.log(board.members);
+    if(board.members.includes(to_email)){
+      return next(new ErrorHandler(400, "User already a member of this board!"));
+    }
     board.members.push(to_email);
     await board.save();
     inviteMail(
