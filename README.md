@@ -3,21 +3,6 @@
 A Nodejs based backend system using MongoDB,NodeJS,Express,Mongoose and deployed on render.
 A robust and secure platform for effective team collaboration and project management.
 
-## Table of Contents
-
-- [Introduction](#introduction)
-- [Features](#features)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-- [Authentication](#authentication)
-- [Payment Implementation](#payment-implementation)
-- [Fuzzy Search](#fuzzy-search)
-- [Database](#database)
-- [OTP Verification](#otp-verification)
-- [Contributing](#contributing)
-
 ## Introduction
 
 The Team Management System is designed to streamline team collaboration, project organization, and communication. It provides a set of features such as boards, cards, and lists to help teams manage their tasks efficiently.
@@ -88,9 +73,3 @@ The application uses MongoDB as the database to store and retrieve project-relat
 ## OTP Verification
 
 Enhance the security of user accounts with OTP verification during the registration or password reset process.
-
-## Contributing
-
-Contributions are welcome! Feel free to open issues or submit pull requests to improve the functionality, security, or usability of the Team Management System.
-
-Happy coding! 🚀
